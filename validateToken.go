@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -20,11 +21,13 @@ func validateToken(w http.ResponseWriter, r *http.Request) {
 	}()
 	// If the authorization token was not provided in the header--
 	if r.Method == "GET" {
-		if r.Header["Token"] == nil {
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" || tokenString == "Bearer " {
 			w.WriteHeader(http.StatusBadRequest)
 			payload.Error = "Authorization token not found"
 		} else {
-			token, err := jwt.Parse(r.Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
+			tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+			token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 				if t.Method.Alg() != "HS256" {
 					return []byte(""), errors.New("invalid signing method")
 				}
