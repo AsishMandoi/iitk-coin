@@ -3,43 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/AsishMandoi/iitk-coin/handlers"
 )
-
-type Stu struct {
-	Rollno   int
-	Name     string
-	Password string
-}
-
-type secretpageRespBodyFormat struct {
-	Message string `json:"message"`
-	Error   string `json:"error"`
-	Data    string `json:"data"`
-}
-
-type signupRespBodyFormat struct {
-	Message string `json:"message"`
-	Error   string `json:"error"`
-}
-
-type loginInputFormat struct {
-	Rollno   int    `json:"rollno"`
-	Password string `json:"password"`
-}
-
-type loginRespBodyFormat struct {
-	Message string `json:"message"`
-	Error   string `json:"error"`
-	Token   string `json:"token"`
-}
 
 func main() {
 
-	http.HandleFunc("/signup", signup)
+	http.HandleFunc("/signup", handlers.Signup)
 
-	http.HandleFunc("/login", login)
+	http.HandleFunc("/login", handlers.Login)
 
-	http.HandleFunc("/secretpage", validateToken)
+	http.HandleFunc("/secretpage", handlers.ValidateToken)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
