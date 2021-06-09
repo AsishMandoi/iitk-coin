@@ -1,2 +1,28 @@
 # IITK Coin
-This is a `go` program. Once executed the program connects to a SQLite database named `iitkusers` and creates a table named `users` inside the database. It contains a function that takes details from a user as its arguement and adds them to the database only if they are a new user. If however, the details of an existing user are tried to be added, the function just displays that the user details are already present.
+
+Please look at the request format for each endpoint in their respective functions.
+
+In order to access /secretpage please provide an authorization token in the **header**.
+
+Deliberately left .env out of .gitignore for the purposes of checking.
+
+For my reference:
+- [ ] Handle errors in signup.go
+
+- [X] send a json object in the response
+
+- [X] GenJWT, SecretKey
+
+- [X] Handle errors: panic(err) -> print(something went wrong...), print === Fprintf/Errorf...
+
+- [ ] isAdmin -> /secretPage
+
+- [ ] http.StatusBadRequest, http.StatusUnauthorized
+
+- [ ] http.HandleFunc => http.POST/http.Handle().Methods("POST")
+
+- [ ] User struct {
+  ID       uint64 `json:"id"`
+  Username string `json:"username"`
+  Password string `json:"password"`
+}
