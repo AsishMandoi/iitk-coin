@@ -1,4 +1,4 @@
-package functions
+package server
 
 import (
 	"time"
@@ -16,7 +16,7 @@ func GenJWT(payload global.LoginInputFormat) (string, error) {
 
 	// Currently only the rollno and the expiration time are used as claims
 	claims["rollno"] = payload.Rollno
-	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
 
 	// A token (tokenString) is generated using the header, the payload (using the claims) and the encoded secret key (gobal.SignatureKey)
 	tokenString, err := token.SignedString(global.SignatureKey)

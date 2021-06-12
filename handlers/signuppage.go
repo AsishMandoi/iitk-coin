@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/AsishMandoi/iitk-coin/functions"
+	"github.com/AsishMandoi/iitk-coin/database"
 	"github.com/AsishMandoi/iitk-coin/global"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/AsishMandoi/iitk-coin/server"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,47 +14,45 @@ import (
 func Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	payload := &global.SignupRespBodyFormat{"-", "-"} // Body of the response to be sent
-
-	// The following function will be called when the signup function ends.
-	defer func() {
-		// Encode the payload (struct) into a json object and then send the json encoded body in the response.
-		json.NewEncoder(w).Encode(*payload)
-	}()
+	var payload = &global.SignupRespBodyFormat{} // Body of the response to be sent
 
 	if r.Method == "POST" {
 		// Converting the body into a json object
 		var usr global.Stu
 		err := json.NewDecoder(r.Body).Decode(&usr)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Something went wrong :("
-			payload.Error = err.Error()
+			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error())
 			return
 		}
 
 		// Hashing the password with a cost of 10
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(usr.Password), 10)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Could not generate hash from password"
-			payload.Error = err.Error()
+			server.Respond(w, payload, 500, "Could not generate hash from password", err.Error())
 			return
 		}
 
 		// The hashed user password should be stored instead of the plaintext version
 		usr.Password = string(hashedPassword)
 
-		msg, err := functions.AddIntoDB(usr)
+		if msg, err := database.Initialize(); err != nil {
+			server.Respond(w, payload, 500, msg, err.Error(), "-")
+			return
+		}
+
+		// Add user into DB
+		msg, err := database.Add(usr)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Could not add user into the database"
-			payload.Error = err.Error()
+			if err.Error() == "User already present" {
+				server.Respond(w, payload, 409, "You have alrady signed up!", err.Error())
+			} else {
+				server.Respond(w, payload, 500, msg, err.Error())
+			}
+
 		} else {
-			payload.Message = msg
+			server.Respond(w, payload, 201, msg, "-")
 		}
 	} else {
-		w.WriteHeader(http.StatusNotImplemented)
-		payload.Message = "Welcome to signup page! Please use a POST request to signup."
+		server.Respond(w, payload, 501, "Welcome to signup page! Please use a POST request to signup.", "-")
 	}
 }

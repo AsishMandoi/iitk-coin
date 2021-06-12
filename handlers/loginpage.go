@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/AsishMandoi/iitk-coin/functions"
+	"github.com/AsishMandoi/iitk-coin/database"
 	"github.com/AsishMandoi/iitk-coin/global"
+	"github.com/AsishMandoi/iitk-coin/server"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,61 +14,43 @@ import (
 func Login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	payload := &global.LoginRespBodyFormat{"-", "-", "-"} // Body of the response to be sent
-
-	// The following function will be called when the login function ends.
-	defer func() {
-		// Encode the payload (struct) into a json object and then send the json encoded body in the response.
-		json.NewEncoder(w).Encode(*payload)
-	}()
+	payload := &global.LoginRespBodyFormat{} // Body of the response to be sent
 
 	if r.Method == "POST" {
 		// Converting the body into a json object
 		var usr global.LoginInputFormat
 		if err := json.NewDecoder(r.Body).Decode(&usr); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Could not decode body of the request"
-			payload.Error = err.Error()
+			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error(), "-")
 			return
 		}
 
-		// Open the DB `iikusers.db`
-		db, err := sql.Open("sqlite3", "./iitkusers.db")
+		if msg, err := database.Initialize(); err != nil {
+			server.Respond(w, payload, 500, msg, err.Error(), "-")
+			return
+		}
+
+		pwd, err := database.GetPwdForRoll(usr.Rollno)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Could not open database"
-			payload.Error = err.Error()
-			return
-		}
-
-		// Check if user with the given rollno is present in the DB
-		row := db.QueryRow("SELECT password FROM users WHERE rollno=" + strconv.Itoa(usr.Rollno))
-		var pwd []byte
-		if err := row.Scan(&pwd); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			payload.Message = "Something went wrong :("
-			payload.Error = err.Error()
+			if err.Error() == "sql: no rows in result set" {
+				server.Respond(w, payload, 400, "Could not identify user with given roll no; Please make sure that you have signed up or check your roll no again.", err.Error(), "-")
+				return
+			}
+			server.Respond(w, payload, 500, "Something went wrong :(", err.Error(), "-")
 			return
 		}
 
 		// Comparing the hash generated from the entered password with the bcrypt-hash (stored in the DB)
-		if err := bcrypt.CompareHashAndPassword(pwd, []byte(usr.Password)); err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			payload.Message = "Login unsuccessful. Invalid user credentials"
-			payload.Error = err.Error()
+		if err := bcrypt.CompareHashAndPassword([]byte(pwd), []byte(usr.Password)); err != nil {
+			server.Respond(w, payload, 401, "Login unsuccessful; Invalid user credentials", err.Error(), "-")
 		} else {
 			payload.Message = "Login successful"
-			if token, err := functions.GenJWT(usr); err != nil {
-				w.WriteHeader(http.StatusForbidden)
-				payload.Message = "Token could not be generated."
-				payload.Error = err.Error()
+			if token, err := server.GenJWT(usr); err != nil {
+				server.Respond(w, payload, 403, "Login successful; Token could not be generated", err.Error(), "-")
 			} else {
-				payload.Message += "; Token generated successfully"
-				payload.Token = token
+				server.Respond(w, payload, 200, "Login successful; Token generated successfully", "-", token)
 			}
 		}
 	} else {
-		w.WriteHeader(http.StatusNotImplemented)
-		payload.Message = "Welcome to login page! Please use a POST request to login."
+		server.Respond(w, payload, 501, "Welcome to login page! Please use a POST request to login.", "-", "-")
 	}
 }
