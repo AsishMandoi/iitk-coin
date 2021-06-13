@@ -14,9 +14,9 @@ Deliberately left `.env` out of `.gitignore` for the purposes of checking.
   
 ---
 ### For my reference:
-- [X] look up popular directory structures
-- [X] send a json object in the response
-- [X] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized
+- [x] look up popular directory structures
+- [x] send a json object in the response
+- [x] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized
 - [ ] use refresh token
 - [ ] A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway. – [Travis Terry](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
 - [ ] (opt) check isAdmin from token and then authorize to /secretPage
