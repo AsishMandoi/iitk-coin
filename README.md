@@ -1,14 +1,14 @@
 # IITK Coin
 
-I have split my package into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `server`, `handlers` and `database`).
+I have split my package into multiple sub-packages (i.e. I have made a few sub-directories - `functions`, `global`, `handlers`).
 
-I have defined some variables and struct types, to be used in other functions in the **`global`** package. This package does not depend on any other package. Also, for the response format for each endpoint, you can refer to this `global` package.
+For the response format for each endpoint please look at the **`global`** package, where I have defined some variables and struct types, to be used in other functions.
 
 The requests format for each endpoint is specified in the beginning of each of the handler functions.
 
-Although the endpoints have slightly different format for their response object, I have handled them all using a `type-switch` in a common server.Respond function which responds to requests for all the endpoints.
+Although the endpoints have slightly different format for their response object, I have handled them all using a `type-switch` in a common `server.Respond` function which responds to requests for all the endpoints.
 
-In order to access /secretpage please provide an authorization token in the **header** in this format --> "Authorization: Bearer \<access token\>".
+In order to access /secretpage please provide an authorization token in the **header** in this format --> **"Authorization: Bearer \<access token\>"**.
 
 Deliberately left `.env` out of `.gitignore` for the purposes of checking.
   
