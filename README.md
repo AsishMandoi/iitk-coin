@@ -18,7 +18,7 @@
     {
       "rollno":   <Your_Rollno>,
       "name":     "<Your_Name>",
-      "password": "<Your_Password>"
+      "password": "<Your_Password>",
       "batch":    "<Your_Batch>"
     }
     ```
@@ -98,6 +98,9 @@
 - ### Cap for Maximum Coins
   Currently set to 1001 coins.
 
+- ### Go Routines
+  Used go routines to handle new requests
+
 - ### Tree Directory Structure
   ```
   iitk-coin
@@ -138,7 +141,6 @@
 - [ ] a new table `auth` for storing just rollnos and passwords?
 - [ ] keep checking for unhandled errors
 
----
 A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway. – [Travis Terry](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
 
 Turn on the Write-Ahead Logging, Disable connections pool --[link1](https://stackoverflow.com/questions/35804884/sqlite-concurrent-writing-performance/35805826)
@@ -146,11 +148,14 @@ Turn on the Write-Ahead Logging, Disable connections pool --[link1](https://stac
 
 Once Commit or Rollback is called on the transaction, that transaction's connection is returned to DB's idle connection pool. The pool size can be controlled with SetMaxIdleConns. --[link](https://golang.org/pkg/database/sql/#DB)
 
+---
 
 > Two concurrent executions can interleave such that your read values become stale.
+
 Solutions:
 1. Do the read, write and validation checks in a single sql statement which is of write nature (so that it acquires lock).
 2. Use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`.
 
 **In which line is the DB actually locked in the default (`DEFERRED`) mode?**
-DB is locked after the `UPDATE` statements are executed, irrespective of whether they are in a transaction, and it is locked for write operations only.
+
+  DB is locked after the `UPDATE` statements are executed, irrespective of whether they are in a transaction, and it is locked for write operations only.
