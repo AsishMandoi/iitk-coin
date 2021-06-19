@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/AsishMandoi/iitk-coin/database"
@@ -17,8 +19,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	payload := &global.LoginRespBodyFormat{} // Body of the response to be sent
 
 	if r.Method == "POST" {
+		usr := struct {
+			Rollno   int    `json:"rollno"`
+			Password string `json:"password"`
+		}{}
+
 		// Converting the body into a json object
-		var usr global.LoginInputFormat
 		if err := json.NewDecoder(r.Body).Decode(&usr); err != nil {
 			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error(), "-")
 			return
@@ -29,10 +35,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pwd, err := database.GetPwdForRoll(usr.Rollno)
+		pwd, err := database.GetPwd(usr.Rollno)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				server.Respond(w, payload, 400, "Could not identify user with given roll no; Please make sure that you have signed up or check your roll no again.", err.Error(), "-")
+			if err == sql.ErrNoRows {
+				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with given roll no %v", usr.Rollno), err.Error(), "-")
 				return
 			}
 			server.Respond(w, payload, 500, "Something went wrong :(", err.Error(), "-")
@@ -44,7 +50,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 401, "Login unsuccessful; Invalid user credentials", err.Error(), "-")
 		} else {
 			payload.Message = "Login successful"
-			if token, err := server.GenJWT(usr); err != nil {
+			if token, err := server.GenJWT(usr.Rollno); err != nil {
 				server.Respond(w, payload, 403, "Login successful; Token could not be generated", err.Error(), "-")
 			} else {
 				server.Respond(w, payload, 200, "Login successful; Token generated successfully", "-", token)

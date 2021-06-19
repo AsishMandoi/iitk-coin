@@ -1,7 +1,11 @@
 iitkusers.db
+iitkusers.db-shm
+iitkusers.db-wal
 
 requests.rest
 
 iitk-coin.exe
 
 task.txt
+
+-- SQLite.sql

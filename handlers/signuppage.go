@@ -10,11 +10,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// POST request format (in the body) -> {"rollno": 190197, "name": "Someone Cool", "password": "sTr0nG-p@$5w0rD"}
+// POST request format (in the body) -> {"rollno": 190197, "name": "Someone Cool", "password": "sTr0nG-p@$5w0rD",  "batch": "Y19"}
 func Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	var payload = &global.SignupRespBodyFormat{} // Body of the response to be sent
+	var payload = &global.DefaultRespBodyFormat{} // Body of the response to be sent
 
 	if r.Method == "POST" {
 		// Converting the body into a json object
