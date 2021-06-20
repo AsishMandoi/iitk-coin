@@ -17,6 +17,7 @@ func Initialize() (string, error) {
 		return "Could not access database", cantOpenErr
 	}
 
+	// As per my understanding, this is required for the `WAL` journal_mode
 	db.SetMaxOpenConns(1)
 
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS users(rollno INTEGER PRIMARY KEY not null, name TEXT not null, password TEXT not null, batch TEXT not null, coins DOUBLE not null);")

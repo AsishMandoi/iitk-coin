@@ -1,11 +1,43 @@
 # IITK Coin
 
 - ### Subpackages
-  - I have split my package into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
-  - **[See Tree Directory Structure](https://github.com/AsishMandoi/iitk-coin#tree-directory-structure)**
+  - My package is split into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
+  - <details>
+      <summary>Tree Directory Structure</summary>
+        
+      ```
+      iitk-coin
+      ├── database
+      │   └── coinOps.go
+      │   └── commonOps.go
+      ├── global
+      │   └── globalObjects.go
+      ├── handlers
+      │   ├── balance.go
+      │   ├── loginpage.go
+      │   ├── reward.go
+      │   ├── secretpage.go
+      │   └── signuppage.go
+      │   └── transact.go
+      ├── server
+      │   ├── authorize.go
+      │   ├── genToken.go
+      │   └── respond.go
+      │   └── routine.go
+      ├── .env
+      ├── .gitignore
+      ├── go.mod
+      ├── go.sum
+      ├── iitkusers.db
+      ├── iitkusers.db-shm
+      ├── iitkusers.db-wal
+      ├── main.go
+      └── README.md
+      ```
+    </details>
 
 - ### Write-Ahead Log
-  Set _journal_mode to WAL intead of default in SQLite.
+  The `journal_mode` is set to `WAL` because of its [advantages](https://sqlite.org/wal.html#overview) over the default, `DELETE` mode in SQLite.
 
 - ### Request Format
   - ##### `/signup` page:
@@ -59,7 +91,7 @@
     {
       "sender":     <Sender_Rollno>,
       "receiver":   <Receiver_Rollno>,
-      "amount":     "<Your_Name>"
+      "amount":     <Amount>
     }
     ```
   - ##### `/reward_coins` page:
@@ -71,26 +103,26 @@
 
     {
       "receiver":   <Receiver_Rollno>,
-      "amount":     "<Your_Name>"
+      "amount":     <Amount>
     }
     ```
-  Sample requests for each endpoint is also specified at the beginning of each of the handler functions.
+  Sample requests for each endpoint is specified at the beginning of each of the handler functions.
 
 - ### Response Format
-  For the response format for each endpoint please look at the `global` package, where I have defined some global objects (variables and struct types), to be used in other functions.
+  For the response format for each endpoint please look at the `global` package, where some global objects (variables and struct types) are defined, to be used in other functions.
 
 - ### Common Response Method
-  Although the endpoints have slightly different format for their response object, I have handled them all using a `type-switch` in a common `server.Respond()` function which responds to requests for all the endpoints. I have used this method a lot times in various files. It has greatly reduced the bulkiness of the codes in individual files.
+  Although the endpoints have slightly different formats for their response object, all of them are handled using a `type-switch` in a common `server.Respond()` function which responds to requests for all the endpoints. This method has been used a lot of times in various files. It has greatly reduced the bulkiness of codes in individual files.
 
 - ### HTTP Status Codes
-  I have assigned a suitable http status code for every response.
+  A suitable http status code is assigned to every response.
 
 - ### Database
-  I have made some reusable functions in the `database` package. The `database.Initialize()` function should be called before doing any other database operation. Currently `sqlite` is used as the database management system. If in the future I switch to any other SQL based database management system, I will just have to change one line of code in the `database` package, and import the corresponding package required for it.
+  The `database.Initialize()` function should be called before doing any other database operation. Currently `sqlite` is used as the database management system. If in the future I wish to switch to any other SQL based database management system, I will just have to change one line of code in the `database` package, and import the corresponding package required for it.
 
 - ### Access Token
-  The `.env` file contains the `Secret Key` to sign the JWT. I have deliberately left it out of `.gitignore` for the purposes of checking.
-  Expiry Time is currently set to 30 minutes.
+  - The `.env` file contains the `Secret Key` to sign the JWT. It is deliberately left out of `.gitignore` for the purposes of checking.
+  - Expiry Time is currently set to 30 minutes.
 
 - ### Refresh Token
   Not implemented yet.
@@ -99,42 +131,14 @@
   Currently set to 1001 coins.
 
 - ### Go Routines
-  Used go routines to handle new requests
+  Go routines are used to handle new requests
 
-- ### Tree Directory Structure
-  ```
-  iitk-coin
-  ├── database
-  │   └── coinOps.go
-  │   └── commonOps.go
-  ├── global
-  │   └── globalObjects.go
-  ├── handlers
-  │   ├── balance.go
-  │   ├── loginpage.go
-  │   ├── reward.go
-  │   ├── secretpage.go
-  │   └── signuppage.go
-  │   └── transact.go
-  ├── server
-  │   ├── authorize.go
-  │   ├── genToken.go
-  │   └── respond.go
-  │   └── routine.go
-  ├── .env
-  ├── .gitignore
-  ├── go.mod
-  ├── go.sum
-  ├── iitkusers.db
-  ├── main.go
-  └── README.md
-  ```
 ---
 ### For my reference:
 - [x] look up popular directory structures
 - [x] send a json object in the response for every endpoint
 - [x] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized, ...
-- [x] batch, amount depends on batch
+- [x] batch, txn depends on batch
 - [ ] use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`
 - [ ] use refresh token
 - [ ] check isAdmin from token and then authorize to /secretPage
