@@ -1,26 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/AsishMandoi/iitk-coin/handlers"
-	"github.com/AsishMandoi/iitk-coin/server"
 )
 
 func main() {
+	http.HandleFunc("/signup", handlers.Signup)
 
-	go server.Routine("signup", handlers.Signup)
+	http.HandleFunc("/login", handlers.Login)
 
-	go server.Routine("login", handlers.Login)
+	http.HandleFunc("/secret_page", handlers.Secret)
 
-	go server.Routine("secret_page", handlers.Secret)
+	http.HandleFunc("/view_coins", handlers.ViewCoins)
 
-	go server.Routine("view_coins", handlers.ViewCoins)
+	http.HandleFunc("/transact", handlers.TransferCoins)
 
-	go server.Routine("transact", handlers.TransactCoins)
+	http.HandleFunc("/reward_coins", handlers.RewardCoins)
 
-	go server.Routine("reward_coins", handlers.RewardCoins)
-
+	fmt.Println("Server running on localhost:8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

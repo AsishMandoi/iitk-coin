@@ -11,13 +11,15 @@ import (
 // Open the DB `iikusers.db` using sqlite, set _journal_mode to WAL
 var db, cantOpenErr = sql.Open("sqlite3", "file:iitkusers.db?cache=shared&mode=rwc&_journal_mode=WAL")
 
+// Open the DB `iikusers.db` using sqlite, _journal_mode is set to DELETE by default
+// var db, cantOpenErr = sql.Open("sqlite3", "iitkusers.db")
+
 // Ideally this function should be called before calling any other function in the `database` package
 func Initialize() (string, error) {
 	if cantOpenErr != nil {
 		return "Could not access database", cantOpenErr
 	}
 
-	// As per my understanding, this is required for the `WAL` journal_mode
 	db.SetMaxOpenConns(1)
 
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS users(rollno INTEGER PRIMARY KEY not null, name TEXT not null, password TEXT not null, batch TEXT not null, coins DOUBLE not null);")

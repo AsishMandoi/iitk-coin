@@ -1,6 +1,8 @@
 package global
 
-import "os"
+import (
+	"os"
+)
 
 var MaxCap = 1001.0
 

@@ -11,7 +11,7 @@ import (
 )
 
 // POST request format (in the body) -> {"sender": 190184, "receiver": 190197, "amount": 500}
-func TransactCoins(w http.ResponseWriter, r *http.Request) {
+func TransferCoins(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.DefaultRespBodyFormat{} // Body of the response to be sent
 

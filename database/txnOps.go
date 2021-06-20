@@ -35,7 +35,6 @@ func Transact(Tx struct {
 	if cntRows, err := res.RowsAffected(); err != nil {
 		return fmt.Errorf("Could not send amount; %v", err)
 	} else if cntRows != 1 {
-		// Try to handle specific errors here if possible
 		return fmt.Errorf("Could not send amount; Possible errors - i) Invalid sender, ii) Insufficient coins")
 	}
 
@@ -46,7 +45,6 @@ func Transact(Tx struct {
 	if cntRows, err := res.RowsAffected(); err != nil {
 		return fmt.Errorf("Could not recieve amount; %v", err)
 	} else if cntRows != 1 {
-		// Try to handle specific errors here if possible
 		return fmt.Errorf("Could not recieve amount; Possible error - Invalid receiver")
 	}
 

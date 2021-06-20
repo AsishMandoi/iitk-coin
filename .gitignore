@@ -2,6 +2,8 @@ iitkusers.db
 iitkusers.db-shm
 iitkusers.db-wal
 
+bash.sh
+
 requests.rest
 
 iitk-coin.exe
