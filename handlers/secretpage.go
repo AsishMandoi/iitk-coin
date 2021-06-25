@@ -16,14 +16,15 @@ func Secret(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 
 		// Authorizing the request
-		statusCode, _, err := server.Authorize(r)
+		statusCode, claims, err := server.Authorize(r)
 		if err != nil {
-			server.Respond(w, payload, statusCode, "-", err.Error(), "-")
+			server.Respond(w, payload, statusCode, "User unauthorized", err.Error(), nil)
 			return
 		}
-		// Since there are no more errors, the secretpage is responds with the confidential information.
-		server.Respond(w, payload, statusCode, "SUCCESS", "-", "Dummy data")
+
+		// Since there are no more errors, the secretpage responds with the confidential information.
+		server.Respond(w, payload, statusCode, "SUCCESS", nil, int(claims["rollno"].(float64)))
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /secret_page! Please use a GET request to get authorized.", "-", "-")
+		server.Respond(w, payload, 501, "Welcome to /secret_page! Please use a GET request to get authorized.", nil, nil)
 	}
 }

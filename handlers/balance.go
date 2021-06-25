@@ -24,27 +24,27 @@ func ViewCoins(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error(), "-")
+			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error(), nil)
 			return
 		}
 
 		// Initialize DB
 		if msg, err := database.Initialize(); err != nil {
-			server.Respond(w, payload, 500, msg, err.Error(), "-")
+			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
 		}
 
 		coins, err := database.GetCoins(body.Rollno)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with given roll no %v", body.Rollno), err.Error(), "-")
+				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", body.Rollno), err.Error(), nil)
 				return
 			}
-			server.Respond(w, payload, 500, "Something went wrong :(", err.Error(), "-")
+			server.Respond(w, payload, 500, "Could not fetch coins for the user", err.Error(), nil)
 			return
 		}
-		server.Respond(w, payload, 200, "SUCCESS", "-", coins)
+		server.Respond(w, payload, 200, "SUCCESS", nil, coins)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /view_coins! Please use a GET request to check your balance.", "-", "-")
+		server.Respond(w, payload, 501, "Welcome to /view_coins! Please use a GET request to check your balance.", nil, nil)
 	}
 }

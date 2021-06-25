@@ -85,9 +85,9 @@
       "rollno":   <User_Rollno>
     }
     ```
-  - ##### `/transact` page:
+  - ##### `/transfer_coins` page:
     ```http
-    POST /transact HTTP/1.1
+    POST /transfer_coins HTTP/1.1
     HOST: localhost:8080
     Content-Type: application/json
     Accept: application/json

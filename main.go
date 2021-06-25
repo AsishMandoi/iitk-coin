@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	http.HandleFunc("/signup", handlers.Signup)
 
 	http.HandleFunc("/login", handlers.Login)
@@ -17,7 +18,7 @@ func main() {
 
 	http.HandleFunc("/view_coins", handlers.ViewCoins)
 
-	http.HandleFunc("/transact", handlers.TransferCoins)
+	http.HandleFunc("/transfer_coins", handlers.TransferCoins)
 
 	http.HandleFunc("/reward_coins", handlers.RewardCoins)
 

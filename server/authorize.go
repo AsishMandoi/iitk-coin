@@ -31,7 +31,7 @@ func Authorize(r *http.Request) (int, jwt.MapClaims, error) {
 		return 400, nil, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
+	if !ok || !token.Valid || claims["rollno"] == 0 {
 		return 401, nil, fmt.Errorf("Invalid authorization token")
 	}
 	return 200, claims, nil

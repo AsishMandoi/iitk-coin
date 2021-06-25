@@ -16,11 +16,13 @@ func GetCoins(rollno interface{}) (float64, error) {
 	return coins, err
 }
 
-func Transact(Tx struct {
-	Sender   int     `json:"sender"`
-	Receiver int     `json:"receiver"`
-	Amount   float64 `json:"amount"`
-}, recAmt float64) error {
+func Transact(
+	Tx struct {
+		Sender   int
+		Receiver int
+		Amount   float64
+	},
+	recAmt float64) error {
 
 	txn, err := db.Begin()
 	if err != nil {
@@ -28,17 +30,17 @@ func Transact(Tx struct {
 	}
 	defer txn.Rollback()
 
-	res, err := txn.Exec("UPDATE users SET coins=coins-(?) WHERE rollno=(?) AND coins>=(?);", Tx.Amount, Tx.Sender, Tx.Amount)
+	res, err := txn.Exec("UPDATE users SET coins=coins-($1) WHERE rollno=($2) AND coins>=($1);", Tx.Amount, Tx.Sender)
 	if err != nil {
 		return fmt.Errorf("Could not send amount; %v", err)
 	}
 	if cntRows, err := res.RowsAffected(); err != nil {
 		return fmt.Errorf("Could not send amount; %v", err)
 	} else if cntRows != 1 {
-		return fmt.Errorf("Could not send amount; Possible errors - i) Invalid sender, ii) Insufficient coins")
+		return fmt.Errorf("Could not send amount; The sender may not have sufficient coins")
 	}
 
-	res, err = txn.Exec("UPDATE users SET coins=CASE WHEN coins+(?)<(?) THEN coins+(?) ELSE (?) END WHERE rollno=?;", recAmt, cap, recAmt, cap, Tx.Receiver)
+	res, err = txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=$3;", recAmt, cap, Tx.Receiver)
 	if err != nil {
 		return fmt.Errorf("Could not recieve amount; %v", err)
 	}
@@ -66,14 +68,13 @@ func Reward(Rwd struct {
 	}
 	defer txn.Rollback()
 
-	res, err := txn.Exec("UPDATE users SET coins=CASE WHEN coins+(?)<(?) THEN coins+(?) ELSE (?) END WHERE rollno=?;", Rwd.Amount, cap, Rwd.Amount, cap, Rwd.Receiver)
+	res, err := txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=$3;", Rwd.Amount, cap, Rwd.Receiver)
 	if err != nil {
 		return fmt.Errorf("Could not recieve amount; %v", err)
 	}
 	if cntRows, err := res.RowsAffected(); err != nil {
 		return fmt.Errorf("Could not recieve amount; %v", err)
 	} else if cntRows != 1 {
-		// Try to handle specific errors here if possible
 		return fmt.Errorf("Could not recieve amount; Possible error - Invalid receiver")
 	}
 

@@ -18,7 +18,6 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 
 		body := struct {
-			Sender   int     `json:"sender"`
 			Receiver int     `json:"receiver"`
 			Amount   float64 `json:"amount"`
 		}{}
@@ -28,34 +27,53 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Authorizing the request
+		statusCode, claims, err := server.Authorize(r)
+		if err != nil {
+			server.Respond(w, payload, statusCode, nil, err.Error(), nil)
+			return
+		}
+
 		// Initialize DB
 		if msg, err := database.Initialize(); err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
 
-		// Logic to calculate coins to be transferred depending on the batch
-		senderBatch, err := database.GetBatch(body.Sender)
+		sender := int(claims["rollno"].(float64))
+		senderBatch := claims["batch"].(string)
+
+		// Implement logic for the minimum events criteria for sender. Also store the variable MIN_EVENTS in .env
+		// Implement logic for the minimum events criteria for sender. Also store the variable MIN_EVENTS in .env
+		// Implement logic for the minimum events criteria for sender. Also store the variable MIN_EVENTS in .env
+		// Implement logic for the minimum events criteria for sender. Also store the variable MIN_EVENTS in .env
+		// Implement logic for the minimum events criteria for sender. Also store the variable MIN_EVENTS in .env
+
+		receiverBatch, receiverRole, err := database.GetBatchnRole(body.Receiver)
 		if err != nil {
-			server.Respond(w, payload, 400, "Transaction failed", fmt.Errorf("Could not send amount; %v", err))
+			server.Respond(w, payload, 400, fmt.Sprintf("Transaction failed; Could not identify receiver with roll no %v", body.Receiver), err.Error())
 			return
 		}
-		receiverBatch, err := database.GetBatch(body.Receiver)
-		if err != nil {
-			server.Respond(w, payload, 400, "Transaction failed", fmt.Errorf("Could not receive amount; %v", err))
-			return
+		if receiverRole == "Admin" || receiverRole == "CoreTeam" {
+			server.Respond(w, payload, 400, "Transaction failed", "Cannot tranfer coins to Admin or Core Team member")
 		}
+
 		recAmt := body.Amount * 0.98
+		// How much coins are to be transferred depends on the batch
 		if senderBatch != receiverBatch {
 			recAmt = body.Amount * 0.67
 		}
 
-		if err := database.Transact(body, recAmt); err != nil {
+		if err := database.Transact(struct {
+			Sender   int
+			Receiver int
+			Amount   float64
+		}{sender, body.Receiver, body.Amount}, recAmt); err != nil {
 			server.Respond(w, payload, 400, "Transaction failed", err.Error())
 			return
 		}
-		server.Respond(w, payload, 200, fmt.Sprintf("Transaction Successful; User: #%v transferred %v coins to user: #%v", body.Sender, recAmt, body.Receiver), "-")
+		server.Respond(w, payload, 200, fmt.Sprintf("Transaction Successful; User: #%v transferred %v coins to user: #%v", sender, recAmt, body.Receiver), nil)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /transact page! Please use a POST request to send coins to another user.", "-")
+		server.Respond(w, payload, 501, "Welcome to /transfer_coins page! Please use a POST request to send coins to another user.", nil)
 	}
 }

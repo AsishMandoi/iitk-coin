@@ -3,6 +3,7 @@ iitkusers.db-shm
 iitkusers.db-wal
 
 bash.sh
+test.sh
 
 requests.rest
 

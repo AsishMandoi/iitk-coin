@@ -36,7 +36,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		usr.Password = string(hashedPassword)
 
 		if msg, err := database.Initialize(); err != nil {
-			server.Respond(w, payload, 500, msg, err.Error(), "-")
+			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
 		}
 
@@ -50,9 +50,9 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 			}
 
 		} else {
-			server.Respond(w, payload, 201, msg, "-")
+			server.Respond(w, payload, 201, msg, nil)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to signup page! Please use a POST request to signup.", "-")
+		server.Respond(w, payload, 501, "Welcome to signup page! Please use a POST request to signup.", nil)
 	}
 }

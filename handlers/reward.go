@@ -38,8 +38,8 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 400, "Reward failed", err.Error())
 			return
 		}
-		server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), "-")
+		server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /reward_coins page! Please use a POST request to reward a user.", "-")
+		server.Respond(w, payload, 501, "Welcome to /reward_coins page! Please use a POST request to reward a user.", nil)
 	}
 }
