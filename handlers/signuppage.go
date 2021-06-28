@@ -10,11 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// POST request format (in the body) -> {"rollno": 190197, "name": "Someone Cool", "password": "sTr0nG-p@$5w0rD",  "batch": "Y19"}
+// POST request format
+// --data {"rollno": 190197, "name": "Someone Cool", "password": "sTr0nG-p@$5w0rD",  "batch": "Y19"}
 func Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	var payload = &global.DefaultRespBodyFormat{} // Body of the response to be sent
+	var payload = &global.DefaultRespBody{} // Body of the response to be sent
 
 	if r.Method == "POST" {
 		// Converting the body into a json object
@@ -35,8 +36,9 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		// The hashed user password should be stored instead of the plaintext version
 		usr.Password = string(hashedPassword)
 
-		if msg, err := database.Initialize(); err != nil {
-			server.Respond(w, payload, 500, msg, err.Error(), nil)
+		// Handle initialization errors in DB
+		if msg, err := database.InitMsg, database.InitErr; err != nil {
+			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
 
@@ -48,7 +50,6 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 			} else {
 				server.Respond(w, payload, 500, msg, err.Error())
 			}
-
 		} else {
 			server.Respond(w, payload, 201, msg, nil)
 		}
