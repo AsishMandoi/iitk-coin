@@ -117,7 +117,7 @@
       {
         "receiver":    <Receiver_Rollno>,
         "amount":      <Amount>,
-        "description": <Remarks>
+        "description": "<Remarks>"
       }
       ```
     </details>
@@ -135,7 +135,7 @@
       {
         "receiver":    <Receiver_Rollno>,
         "amount":      <Amount>,
-        "description": <Remarks>
+        "description": "<Remarks>"
       }
       ```
     </details>
