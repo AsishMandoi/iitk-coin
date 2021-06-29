@@ -48,6 +48,7 @@
   - ##### `/signup` page:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       POST /signup HTTP/1.1
       HOST: localhost:8080
@@ -65,6 +66,7 @@
   - ##### `/login` page:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       POST /login HTTP/1.1
       HOST: localhost:8080
@@ -80,6 +82,7 @@
   - ##### `/secretpage`:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       GET /secretpage HTTP/1.1
       HOST: localhost:8080
@@ -89,6 +92,7 @@
   - ##### `/view_coins`:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       GET /view_coins HTTP/1.1
       HOST: localhost:8080
@@ -100,6 +104,7 @@
   - ##### `/transfer_coins` page:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       POST /transfer_coins HTTP/1.1
       HOST: localhost:8080
@@ -117,6 +122,7 @@
   - ##### `/reward_coins` page:
     <details>
       <summary>Click to view</summary>
+      
       ```http
       POST /reward_coins HTTP/1.1
       HOST: localhost:8080
@@ -134,6 +140,7 @@
   - ##### `/redeem_coins` page:
     <details>
       <summary>Click to view</summary>
+      
       ```
       Not Implemented yet
       ```
@@ -152,8 +159,12 @@
 - ### Database
   The `init()` function of the `database` package automatically initializes the database. The initialization errors are handled before making any other database operations. Currently `sqlite` is used as the database management system. If in the future I wish to switch to any other SQL based database management system, I will just have to change one line of code in the `database` package, and import the corresponding package required for it.
 
+- ### .env
+  - The `.env` file contains the `Secret Key` to sign the JWT, the variable `Maximum Cap` for the coins and the variable `Minimum Events` which is a for users to be eligible for transactions. It is deliberately left out of `.gitignore` for the purposes of checking.
+  - If an `.env` file is not found the defult values of these environment variables will be used throughout.
+  - My intention was to make it convenient for one who is running the backend to be able to update these varibles in the `.env` file without having to search for them in the code. And I have made it so that, if these environment variables are updated here these values will be overwritten to the variables defined inside the code.
+
 - ### Access Token
-  - The `.env` file contains the `Secret Key` to sign the JWT. It is deliberately left out of `.gitignore` for the purposes of checking.
   - Expiry Time is currently set to 30 minutes.
 
 - ### Refresh Token
