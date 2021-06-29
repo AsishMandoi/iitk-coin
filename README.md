@@ -86,6 +86,8 @@
       ```http
       GET /secretpage HTTP/1.1
       HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
       Authorization: Bearer <Token>
       ```
     </details>
@@ -114,7 +116,7 @@
 
       {
         "receiver":    <Receiver_Rollno>,
-        "amount":      <Amount>
+        "amount":      <Amount>,
         "description": <Remarks>
       }
       ```
@@ -132,7 +134,7 @@
 
       {
         "receiver":    <Receiver_Rollno>,
-        "amount":      <Amount>
+        "amount":      <Amount>,
         "description": <Remarks>
       }
       ```
@@ -165,7 +167,7 @@
   - My intention was to make it convenient for one who is running the backend to be able to update these varibles in the `.env` file without having to search for them in the code. And I have made it so that, if these environment variables are updated here these values will be overwritten to the variables defined inside the code.
 
 - ### Access Token
-  - Expiry Time is currently set to 30 minutes.
+  Expiry Time is currently set to 30 minutes.
 
 - ### Refresh Token
   Not implemented yet.
