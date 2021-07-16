@@ -54,6 +54,6 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 201, msg, nil)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to signup page! Please use a POST request to signup.", nil)
+		server.Respond(w, payload, 501, "Welcome to signup page! Please use a POST method to signup.", nil)
 	}
 }

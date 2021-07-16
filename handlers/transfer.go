@@ -30,7 +30,7 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Authorizing the request
+		// Authorizing the request and obtaining the user's roll no
 		statusCode, claims, err := server.ValidateJWT(r)
 		if err != nil {
 			server.Respond(w, payload, statusCode, nil, err.Error(), nil, nil)
@@ -85,6 +85,6 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 200, fmt.Sprintf("Transaction Successful; User: #%v transferred %v coins to user: #%v", sender, amtRcvd, body.Receiver), nil, txnId)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /transfer_coins page! Please use a POST request to send coins to another user.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /transfer_coins page! Please use a POST method to send coins to another user.", nil, nil)
 	}
 }

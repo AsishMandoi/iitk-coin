@@ -61,6 +61,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 200, "Login successful; Token generated successfully", nil, token)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to login page! Please use a POST request to login.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to login page! Please use a POST method to login.", nil, nil)
 	}
 }

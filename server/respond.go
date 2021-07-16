@@ -17,7 +17,7 @@ func Respond(w http.ResponseWriter, payload interface{}, statusCode int, args ..
 		v.Message = args[0]
 		v.Error = args[1]
 		v.Token = args[2]
-	case *global.SecretpageRespBody:
+	case *global.DefaultDataRespBody:
 		v.Message = args[0]
 		v.Error = args[1]
 		v.Data = args[2]
@@ -29,6 +29,10 @@ func Respond(w http.ResponseWriter, payload interface{}, statusCode int, args ..
 		v.Message = args[0]
 		v.Error = args[1]
 		v.TxnId = args[2]
+	case *global.RedeemRespBody:
+		v.Message = args[0]
+		v.Error = args[1]
+		v.ReqId = args[2]
 	}
 	json.NewEncoder(w).Encode(payload)
 }

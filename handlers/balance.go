@@ -20,7 +20,7 @@ func ViewCoins(w http.ResponseWriter, r *http.Request) {
 	// Only accepting GET request from this endpoint
 	if r.Method == "GET" {
 
-		// Authorizing the request
+		// Authorizing the request and obtaining the user's roll no
 		statusCode, claims, err := server.ValidateJWT(r)
 		if err != nil {
 			server.Respond(w, payload, statusCode, nil, err.Error(), nil)
@@ -47,6 +47,6 @@ func ViewCoins(w http.ResponseWriter, r *http.Request) {
 		}
 		server.Respond(w, payload, 200, "SUCCESS", nil, coins)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /view_coins! Please use a GET request to check your balance.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /view_coins! Please use a GET method to check your balance.", nil, nil)
 	}
 }

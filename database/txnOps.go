@@ -105,3 +105,48 @@ func Reward(Tx global.TxnBody) (interface{}, error) {
 
 	return txid, nil
 }
+
+// Update redeem status
+func UpdRdmSts(redeemReq global.RedeemStatusUPDBody) (interface{}, error) {
+	if redeemReq.Status == "Accept" {
+		txn, err := db.Begin()
+		if err != nil {
+			return nil, err
+		}
+		defer txn.Rollback()
+
+		res, err := txn.Exec("UPDATE users SET coins=coins-($1) WHERE rollno=($2) AND coins>=($1);", redeemReq.Coins, redeemReq.User)
+		if err != nil {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows, err := res.RowsAffected(); err != nil {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows != 1 {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v; Possible errors - insufficient funds in redeemer's account or user may have been deleted from the database", redeemReq.User)
+		}
+
+		res, err = txn.Exec("UPDATE redeemRequests SET status=1, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id)
+		if err != nil {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows, err := res.RowsAffected(); err != nil {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows != 1 {
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v", redeemReq.User)
+		}
+
+		err = txn.Commit()
+		if err != nil {
+			return nil, err
+		}
+		return redeemReq.Id, nil
+	} else {
+		res, err := db.Exec("UPDATE redeemRequests SET status=0, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id)
+		if err != nil {
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows, err := res.RowsAffected(); err != nil {
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v; %v", redeemReq.User, err)
+		} else if cntRows != 1 {
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v; Possible error - status may have been already updated", redeemReq.User)
+		}
+		return nil, nil
+	}
+}

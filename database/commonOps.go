@@ -42,3 +42,78 @@ func Add(usr global.Stu) (string, error) {
 	}
 	return "Added user successfully.", nil
 }
+
+var reqId int
+var usr int
+var itemId int
+var amt float64
+var descr string
+var rdmStatus = map[int]string{0: "Rejected", 1: "Accepted", 2: "Pending"}
+var reqTime interface{}
+var respTime interface{}
+
+// Add an entry to the redeemRequests table in the DB
+func RedeemReq(usr int, args struct {
+	Item_id int     `json:"item_id"`
+	Price   float64 `json:"price"`
+	Descr   string  `json:"description"`
+}) (interface{}, error) {
+	res, err := db.Exec("INSERT INTO redeemRequests(redeemer, item_id, amount, description, status) VALUES (?, ?, ?, ?, 2);", usr, args.Item_id, args.Price, args.Descr)
+	if err != nil {
+		return nil, err
+	} else if cntRows, err := res.RowsAffected(); err != nil {
+		return nil, err
+	} else if cntRows != 1 {
+		return nil, fmt.Errorf("Could not make redeem request")
+	}
+
+	reqId, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("Could not make redeem request; %v", err)
+	}
+	return reqId, nil
+}
+
+// Show all pending redeem requests (to the admin) [A list of objects of type global.RedeemReqObj is returned]
+func ShowAllRdmReqs() (interface{}, error) {
+	rows, err := db.Query("SELECT id, redeemer, item_id, amount, description, requested_on FROM redeemRequests WHERE status=2")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var allRedeemReqs []global.RedeemReqObj
+
+	for rows.Next() {
+		if err := rows.Scan(&reqId, &usr, &itemId, &amt, &descr, &reqTime); err != nil {
+			return nil, err
+		}
+		allRedeemReqs = append(allRedeemReqs, global.RedeemReqObj{reqId, usr, itemId, amt, descr, reqTime})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return allRedeemReqs, nil
+}
+
+// Show the statuses of all redeem requests to a user [A list of objects of type global.UserRedeemState is returned]
+func ShowRdmSts(redeemer int) (interface{}, error) {
+	rows, err := db.Query("SELECT id, item_id, amount, description, status, requested_on, responded_on FROM redeemRequests WHERE redeemer=(?);", redeemer)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var myRedeems []global.UserRedeemState
+	var idx int
+
+	for rows.Next() {
+		if err := rows.Scan(&reqId, &itemId, &amt, &descr, &idx, &reqTime, &respTime); err != nil {
+			return nil, err
+		}
+		myRedeems = append(myRedeems, global.UserRedeemState{reqId, itemId, amt, descr, rdmStatus[idx], reqTime, respTime})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return myRedeems, nil
+}

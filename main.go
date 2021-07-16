@@ -22,6 +22,15 @@ func main() {
 
 	http.HandleFunc("/reward_coins", handlers.RewardCoins)
 
+	// Redeem related endpts
+	http.HandleFunc("/redeem", handlers.Redeem)
+
+	http.HandleFunc("/redeem_requests", handlers.ViewRedeemRequests)
+
+	http.HandleFunc("/update_redeem_status", handlers.UpdateRedeemStatus)
+
+	http.HandleFunc("/redeem_status", handlers.ViewRedeemStatus)
+
 	fmt.Println("Server running on localhost:8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

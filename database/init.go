@@ -29,4 +29,9 @@ func init() {
 	if err != nil {
 		InitMsg, InitErr = "Could not create table `transactions`", err
 	}
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS redeemRequests(id INTEGER PRIMARY KEY not null, redeemer INTEGER not null, item_id INTEGER not null, amount INTEGER not null, description TEXT not null, status INTEGER not null, requested_on TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP, responded_on TIMESTAMP not null DEFAULT '0000-00-00 00:00:00');")
+	if err != nil {
+		InitMsg, InitErr = "Could not create table `redeemRequests`", err
+	}
 }

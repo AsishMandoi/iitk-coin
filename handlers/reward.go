@@ -31,7 +31,7 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Authorizing the request
+		// Authorizing the request and obtaining the user's roll no
 		statusCode, claims, err := server.ValidateJWT(r)
 		if err != nil {
 			server.Respond(w, payload, statusCode, nil, err.Error(), nil)
@@ -71,6 +71,6 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil, txnId)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /reward_coins page! Please use a POST request to reward a user.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /reward_coins page! Please use a POST method to reward a user.", nil, nil)
 	}
 }

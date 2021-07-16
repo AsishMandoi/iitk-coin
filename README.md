@@ -1,5 +1,7 @@
 # IITK Coin
 
+Sorry for the delay in submitting task-5. I'll update few more things in the README.md soon.
+
 - ### Subpackages
   - My package is split into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
   - <details>
@@ -17,6 +19,7 @@
       ├── handlers
       │   ├── balance.go
       │   ├── loginpage.go
+      │   ├── redeem.go
       │   ├── reward.go
       │   ├── secretpage.go
       │   └── signuppage.go
@@ -42,7 +45,7 @@
   - I also tested both the modes (again using parallel curl commands) intentionally keeping the DB locked for a certain time. In the default mode the concurrent requests are bound to be unsuccessful with an `database is locked` error. But, in `WAL` mode requests are handled sequentially and automatically once the db gets unlocked.
 
 - ### Testing
-  I have used this script - http://p.ip.fi/8SxQ to test the endpoints.
+  I have used this script - http://p.ip.fi/Kb_e to test the endpoints.
 
 - ### Request Format
   - ##### `/signup` page:
@@ -139,12 +142,156 @@
       }
       ```
     </details>
-  - ##### `/redeem_coins` page:
+  - ##### `/redeem` page:
     <details>
-      <summary>Click to view</summary>
+      <summary>Click to view example request-response</summary>
       
+      ```http
+      POST /redeem HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjQwOTMxMSwicm9sZSI6IiIsInJvbGxubyI6MTkyMTk3fQ.Rhe8kysvwYe8WC_kNEeithxaf-lHw1FgE1urJld1Y6g
+
+      {
+        "item_id": 91021,
+        "price": 50,
+        "description": "Testing an eligible sender."
+      }
       ```
-      Not Implemented yet
+      Response body-
+
+      ```
+      {
+        "message": "Redeem request successful",
+        "error": null,
+        "request_id": 4
+      }
+      ```
+    </details>
+  - ##### `/redeem_requests` page:
+    <details>
+      <summary>Click to view example request-response</summary>
+      
+      ```http
+      GET /redeem_requests HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
+      ```
+      Response body-
+
+      ```
+      {
+        "message": null,
+        "error": null,
+        "data": [
+          {
+            "request_id": 2,
+            "redeemer": 192197,
+            "item_id": 91020,
+            "amount": 30,
+            "description": "Testing an eligible sender.",
+            "requested_on": "2021-07-16T02:37:48Z"
+          },
+          {
+            "request_id": 3,
+            "redeemer": 192197,
+            "item_id": 91021,
+            "amount": 50,
+            "description": "Testing an eligible sender.",
+            "requested_on": "2021-07-16T03:52:25Z"
+          }
+        ]
+      }
+      ```
+    </details>
+  - ##### `/update_redeem_status` page:
+    <details>
+      <summary>Click to view example request-response</summary>
+      
+      ```http
+      POST /update_redeem_status HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQxMTQ5MCwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.mrNBbfpwp9GjNKb2G0OgNbKNX8kdoJbafidMFof3sd0
+
+      {
+        "request_id": 3,
+        "user": 192197,
+        "coins": 50,
+        "status": "Accept",
+        "description": "Testing an Admin"
+      }
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Redeem updated successfully",
+        "error": null,
+        "transaction_id": 3
+      }
+      ```
+    </details>
+  - ##### `/redeem_status` page:
+    <details>
+      <summary>Click to view example request-response</summary>
+      
+      ```http
+      GET /redeem_requests HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
+      ```
+      Response body-
+
+      ```
+      {
+        "message": null,
+        "error": null,
+        "data": [
+          {
+            "id": 1,
+            "item_id": 91019,
+            "amount": 10,
+            "description": "Testing an Admin",
+            "status": "Accepted",
+            "requested_on": "2021-07-16T00:51:47Z",
+            "responded_on": "2021-07-16T03:53:28Z"
+          },
+          {
+            "id": 2,
+            "item_id": 91020,
+            "amount": 30,
+            "description": "Testing an eligible sender.",
+            "status": "Pending",
+            "requested_on": "2021-07-16T02:37:48Z",
+            "responded_on": "0001-01-01T00:00:00Z"
+          },
+          {
+            "id": 3,
+            "item_id": 91021,
+            "amount": 50,
+            "description": "Testing an Admin",
+            "status": "Accepted",
+            "requested_on": "2021-07-16T03:52:25Z",
+            "responded_on": "2021-07-16T04:29:16Z"
+          },
+          {
+            "id": 4,
+            "item_id": 91021,
+            "amount": 50,
+            "description": "Testing an eligible sender.",
+            "status": "Pending",
+            "requested_on": "2021-07-16T04:26:43Z",
+            "responded_on": "0001-01-01T00:00:00Z"
+          }
+        ]
+      }
       ```
     </details>
   Sample requests for each endpoint are specified at the beginning of each of the handler functions.
@@ -173,7 +320,7 @@
   Not implemented yet.
 
 - ### Cap for Maximum Coins
-  Currently set to `1001` coins.
+  Currently set to `10001` coins.
 
 - ### Minimum Events
   Currently set to `6`.
@@ -184,9 +331,10 @@
 - [x] send a json object in the response for every endpoint
 - [x] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized, ...
 - [x] batch, txn depends on batch
+- [X] make redeem_coins endpts.
+- [ ] implement OTP
 - [ ] use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`
 - [ ] use refresh token
-- [ ] make redeem_coins endpt.
 - [ ] check isAdmin from token and then authorize to /secretPage
 - [ ] a new table `auth` for storing just rollnos and passwords?
 - [ ] keep checking for unhandled errors
@@ -198,6 +346,7 @@ Turn on the Write-Ahead Logging, Disable connections pool --[link1](https://stac
 Once Commit or Rollback is called on the transaction, that transaction's connection is returned to DB's idle connection pool. The pool size can be controlled with SetMaxIdleConns. --[link](https://golang.org/pkg/database/sql/#DB)
 
 ---
+> As a general rule of thumb, if you can use structs to represent your JSON data, you should use them. The only good reason to use maps would be if it were not possible to use structs due to the uncertain nature of the keys or values in the data.
 
 > Two concurrent executions can interleave such that your read values become stale.
 

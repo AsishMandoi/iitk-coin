@@ -12,7 +12,7 @@ import (
 func Secret(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	payload := &global.SecretpageRespBody{} // Body of the response to be sent
+	payload := &global.DefaultDataRespBody{} // Body of the response to be sent
 
 	if r.Method == "GET" {
 
@@ -23,6 +23,6 @@ func Secret(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, statusCode, "SUCCESS", nil, int(claims["rollno"].(float64)))
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /secret_page! Please use a GET request to get authorized.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /secret_page! Please use a GET method to get authorized.", nil, nil)
 	}
 }
