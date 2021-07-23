@@ -13,6 +13,7 @@ import (
 // Generate a JWT for a given user (rollno, batch, role)
 func GenJWT(usr struct {
 	Rollno int
+	Email  string
 	Batch  string
 	Role   string
 }) (string, error) {
@@ -25,6 +26,9 @@ func GenJWT(usr struct {
 	claims["rollno"] = usr.Rollno
 	claims["batch"] = usr.Batch
 	claims["role"] = usr.Role
+
+	// CHANGE "usr.Email" to "global.MyGmailId" for testing purposes
+	claims["email"] = usr.Email
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	// A token (tokenString) is generated using the header, the payload (using the claims) and the encoded secret key (gobal.SignatureKey)

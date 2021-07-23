@@ -53,9 +53,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if token, err := server.GenJWT(struct {
-			Rollno      int
-			Batch, Role string
-		}{usr.Rollno, usrDB.Batch, usrDB.Role}); err != nil {
+			Rollno             int
+			Email, Batch, Role string
+		}{usr.Rollno, usrDB.Email, usrDB.Batch, usrDB.Role}); err != nil {
 			server.Respond(w, payload, 403, "Login successful; Token could not be generated", err.Error(), nil)
 		} else {
 			server.Respond(w, payload, 200, "Login successful; Token generated successfully", nil, token)

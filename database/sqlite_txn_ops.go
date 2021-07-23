@@ -17,7 +17,7 @@ func GetCoins(rollno interface{}) (float64, error) {
 }
 
 // Lets an authorized, eligible user send coins to another valid, eligible user
-func Transact(Tx global.TxnBody, amtRcvd float64) (interface{}, error) {
+func Transact(Tx global.TxnObj) (interface{}, error) {
 
 	txn, err := db.Begin()
 	if err != nil {
@@ -25,7 +25,7 @@ func Transact(Tx global.TxnBody, amtRcvd float64) (interface{}, error) {
 	}
 	defer txn.Rollback()
 
-	res, err := txn.Exec("UPDATE users SET coins=coins-($1) WHERE rollno=($2) AND coins>=($1);", Tx.Amount, Tx.Sender)
+	res, err := txn.Exec("UPDATE users SET coins=coins-($1) WHERE rollno=($2) AND coins>=($1);", Tx.AmtSent, Tx.Sender)
 	if err != nil {
 		return nil, fmt.Errorf("Could not send amount; %v", err)
 	} else if cntRows, err := res.RowsAffected(); err != nil {
@@ -34,17 +34,17 @@ func Transact(Tx global.TxnBody, amtRcvd float64) (interface{}, error) {
 		return nil, fmt.Errorf("Could not send amount; The sender may not have sufficient coins")
 	}
 
-	res, err = txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=($3);", amtRcvd, cap, Tx.Receiver)
+	res, err = txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=($3);", Tx.AmtRcvd, cap, Tx.Receiver)
 	if err != nil {
-		return nil, fmt.Errorf("Could not recieve amount; %v", err)
+		return nil, fmt.Errorf("Could not receive amount; %v", err)
 	} else if cntRows, err := res.RowsAffected(); err != nil {
-		return nil, fmt.Errorf("Could not recieve amount; %v", err)
+		return nil, fmt.Errorf("Could not receive amount; %v", err)
 	} else if cntRows != 1 {
-		return nil, fmt.Errorf("Could not recieve amount; Possible error - Invalid receiver")
+		return nil, fmt.Errorf("Could not receive amount; Possible error - Invalid receiver")
 	}
 
 	// Storing the transaction as a log in another table
-	res, err = txn.Exec("INSERT INTO transactions(type, sender, receiver, amount, description) VALUES (?, ?, ?, ?, ?)", "Transfer", Tx.Sender, Tx.Receiver, Tx.Amount, Tx.Descr)
+	res, err = txn.Exec("INSERT INTO transactions(type, sender, receiver, amount, description) VALUES (?, ?, ?, ?, ?)", "Transfer", Tx.Sender, Tx.Receiver, Tx.AmtSent, Tx.Descr)
 	if err != nil {
 		return nil, fmt.Errorf("Could not log transfer; %v", err)
 	} else if cntRows, err := res.RowsAffected(); err != nil {
@@ -67,24 +67,24 @@ func Transact(Tx global.TxnBody, amtRcvd float64) (interface{}, error) {
 }
 
 // Lets an authorized Admin reward coins to a valid user
-func Reward(Tx global.TxnBody) (interface{}, error) {
+func Reward(Tx global.TxnObj) (interface{}, error) {
 	txn, err := db.Begin()
 	if err != nil {
 		return nil, err
 	}
 	defer txn.Rollback()
 
-	res, err := txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=($3);", Tx.Amount, cap, Tx.Receiver)
+	res, err := txn.Exec("UPDATE users SET coins=CASE WHEN coins+($1)<($2) THEN coins+($1) ELSE ($2) END WHERE rollno=($3);", Tx.AmtSent, cap, Tx.Receiver)
 	if err != nil {
-		return nil, fmt.Errorf("Could not recieve amount; %v", err)
+		return nil, fmt.Errorf("Could not receive amount; %v", err)
 	} else if cntRows, err := res.RowsAffected(); err != nil {
-		return nil, fmt.Errorf("Could not recieve amount; %v", err)
+		return nil, fmt.Errorf("Could not receive amount; %v", err)
 	} else if cntRows != 1 {
-		return nil, fmt.Errorf("Could not recieve amount; Possible error - Invalid receiver")
+		return nil, fmt.Errorf("Could not receive amount; Possible error - Invalid receiver")
 	}
 
 	// Storing the transaction as a log in another table
-	res, err = txn.Exec("INSERT INTO transactions(type, sender, receiver, amount, description) VALUES (?, ?, ?, ?, ?)", "Reward", Tx.Sender, Tx.Receiver, Tx.Amount, Tx.Descr)
+	res, err = txn.Exec("INSERT INTO transactions(type, sender, receiver, amount, description) VALUES (?, ?, ?, ?, ?)", "Reward", Tx.Sender, Tx.Receiver, Tx.AmtSent, Tx.Descr)
 	if err != nil {
 		return nil, fmt.Errorf("Could not log reward; %v", err)
 	} else if cntRows, err := res.RowsAffected(); err != nil {
@@ -145,7 +145,7 @@ func UpdRdmSts(redeemReq global.RedeemStatusUPDBody) (interface{}, error) {
 		} else if cntRows, err := res.RowsAffected(); err != nil {
 			return nil, fmt.Errorf("Could not reject redeem request for user#%v; %v", redeemReq.User, err)
 		} else if cntRows != 1 {
-			return nil, fmt.Errorf("Could not reject redeem request for user#%v; Possible error - status may have been already updated", redeemReq.User)
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v; Possible error - status may have already been updated", redeemReq.User)
 		}
 		return nil, nil
 	}

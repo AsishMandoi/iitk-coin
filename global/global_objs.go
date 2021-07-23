@@ -4,10 +4,13 @@ package global
 var SignatureKey = []byte("")
 var MaxCap = 101.0
 var MinEvents = 5
+var MyGmailId string
+var MyPwd string
 
 type Stu struct {
 	Rollno   int    `json:"rollno"`
 	Name     string `json:"name"`
+	Email    string `json:"iitk_email"`
 	Password string `json:"password"`
 	Batch    string `json:"batch"`
 	Role     string `json:"role"`
@@ -48,11 +51,21 @@ type RedeemRespBody struct {
 	ReqId   interface{} `json:"request_id"`
 }
 
-type TxnBody struct {
-	Sender   int
-	Receiver int
-	Amount   float64
-	Descr    string
+type TxnObj struct {
+	Sender   int     `json:"sender"`
+	Receiver int     `json:"receiver"`
+	AmtSent  float64 `json:"amount_sent"`
+	AmtRcvd  float64 `json:"amount_received"`
+	Descr    string  `json:"description"`
+	Otp      string  `json:"otp"`
+}
+
+type RedeemObj struct {
+	Redeemer int     `json:"redeemer"`
+	ItemId   int     `json:"item_id"`
+	Amount   float64 `json:"amount"`
+	Descr    string  `json:"description"`
+	Otp      string  `json:"otp"`
 }
 
 type RedeemReqObj struct {

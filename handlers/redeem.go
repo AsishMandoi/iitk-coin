@@ -12,40 +12,43 @@ import (
 // Making a redeem request
 func Redeem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	payload := &global.RedeemRespBody{} // Body of the response to be sent
+	payload := &global.DefaultRespBody{} // Body of the response to be sent
 	if r.Method == "POST" {
 		body := struct {
 			Item_id int     `json:"item_id"`
-			Price   float64 `json:"price"`
+			Amount  float64 `json:"amount"`
 			Descr   string  `json:"description"`
 		}{}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error(), nil)
+			server.Respond(w, payload, 400, "Could not decode body of the request", err.Error())
 			return
 		}
 
 		// Authorizing the request and obtaining the user's roll no
 		statusCode, claims, err := server.ValidateJWT(r)
 		if err != nil {
-			server.Respond(w, payload, statusCode, nil, err.Error(), nil, nil)
+			server.Respond(w, payload, statusCode, nil, err.Error())
 			return
 		}
 
-		usr := int(claims["rollno"].(float64))
+		userRoll := int(claims["rollno"].(float64))
+		userEmail := claims["email"].(string)
 
 		// Handle initialization errors in DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
-			server.Respond(w, payload, 500, msg, err.Error(), nil)
+			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
 
-		if reqId, err := database.RedeemReq(usr, body); err != nil {
-			server.Respond(w, payload, 400, "Redeem request failed", err.Error(), nil)
-		} else {
-			server.Respond(w, payload, 201, "Redeem request successful", nil, reqId)
+		// Generate OTP, save it (along with other details) in the database with an expiry time and then send it
+		if msg, err := server.SendOTP(userEmail, global.RedeemObj{userRoll, body.Item_id, body.Amount, body.Descr, ""}, "redeem"); err != nil {
+			server.Respond(w, payload, 500, msg, err.Error())
+			return
 		}
+
+		server.Respond(w, payload, 200, "Post your otp to http://localhost:8080/confirm_redeem_request to confirm your transaction", nil)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /redeem page! Please use a POST method to make a redeem request.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /redeem page! Please use a POST method to make a redeem request.", nil)
 	}
 }
 

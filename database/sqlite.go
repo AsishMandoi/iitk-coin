@@ -8,10 +8,10 @@ import (
 )
 
 // Get the user details (password, batch, and role) for the given rollno (if present)
-func GetUsrDetails(rollno int) (struct{ Pwd, Batch, Role string }, error) {
-	row := db.QueryRow("SELECT password, batch, role FROM users WHERE rollno=?;", rollno)
-	var usrDetails struct{ Pwd, Batch, Role string }
-	err := row.Scan(&usrDetails.Pwd, &usrDetails.Batch, &usrDetails.Role)
+func GetUsrDetails(rollno int) (struct{ Email, Pwd, Batch, Role string }, error) {
+	row := db.QueryRow("SELECT email, password, batch, role FROM users WHERE rollno=?;", rollno)
+	var usrDetails struct{ Email, Pwd, Batch, Role string }
+	err := row.Scan(&usrDetails.Email, &usrDetails.Pwd, &usrDetails.Batch, &usrDetails.Role)
 	return usrDetails, err
 }
 
@@ -33,14 +33,14 @@ func GetCntEvents(rollno int) (int, error) {
 
 // Add a user into the DB
 func Add(usr global.Stu) (string, error) {
-	_, err := db.Exec("INSERT INTO users(rollno, name, password, batch, role, coins) VALUES (?, ?, ?, ?, ?, ?);", usr.Rollno, usr.Name, usr.Password, usr.Batch, "", 0)
+	_, err := db.Exec("INSERT INTO users(rollno, name, email, password, batch, role, coins) VALUES (?, ?, ?, ?, ?, ?, ?);", usr.Rollno, usr.Name, usr.Email, usr.Password, usr.Batch, "", 0)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.rollno" {
 			return "Could not add user into the database", fmt.Errorf("User #%v already present", usr.Rollno)
 		}
 		return "Could not add user into the database", err
 	}
-	return "Added user successfully.", nil
+	return "Added user successfully", nil
 }
 
 var reqId int
@@ -53,12 +53,8 @@ var reqTime interface{}
 var respTime interface{}
 
 // Add an entry to the redeemRequests table in the DB
-func RedeemReq(usr int, args struct {
-	Item_id int     `json:"item_id"`
-	Price   float64 `json:"price"`
-	Descr   string  `json:"description"`
-}) (interface{}, error) {
-	res, err := db.Exec("INSERT INTO redeemRequests(redeemer, item_id, amount, description, status) VALUES (?, ?, ?, ?, 2);", usr, args.Item_id, args.Price, args.Descr)
+func RedeemReq(rdm global.RedeemObj) (interface{}, error) {
+	res, err := db.Exec("INSERT INTO redeemRequests(redeemer, item_id, amount, description, status) VALUES (?, ?, ?, ?, 2);", rdm.Redeemer, rdm.ItemId, rdm.Amount, rdm.Descr)
 	if err != nil {
 		return nil, err
 	} else if cntRows, err := res.RowsAffected(); err != nil {

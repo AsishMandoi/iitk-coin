@@ -22,7 +22,7 @@ func main() {
 
 	http.HandleFunc("/reward_coins", handlers.RewardCoins)
 
-	// Redeem related endpts
+	// Redeem related endpoints
 	http.HandleFunc("/redeem", handlers.Redeem)
 
 	http.HandleFunc("/redeem_requests", handlers.ViewRedeemRequests)
@@ -30,6 +30,11 @@ func main() {
 	http.HandleFunc("/update_redeem_status", handlers.UpdateRedeemStatus)
 
 	http.HandleFunc("/redeem_status", handlers.ViewRedeemStatus)
+
+	// Confirmation endpoints
+	http.HandleFunc("/confirm_transfer", handlers.TransferCheck)
+
+	http.HandleFunc("/confirm_redeem_request", handlers.RedeemCheck)
 
 	fmt.Println("Server running on localhost:8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

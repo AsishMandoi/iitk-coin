@@ -65,7 +65,7 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if txnId, err := database.Reward(global.TxnBody{sender, body.Receiver, body.Amount, body.Descr}); err != nil {
+		if txnId, err := database.Reward(global.TxnObj{sender, body.Receiver, body.Amount, body.Amount, body.Descr, ""}); err != nil {
 			server.Respond(w, payload, 400, "Reward failed", err.Error(), nil)
 		} else {
 			server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil, txnId)

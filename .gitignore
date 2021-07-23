@@ -12,3 +12,5 @@ iitk-coin.exe
 task.txt
 
 -- SQLite.sql
+
+.env.dev
