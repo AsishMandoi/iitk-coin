@@ -1,7 +1,5 @@
 # IITK Coin
 
-Sorry for the delay in submitting task-5. I'll update few more things in the README.md soon.
-
 - ### Subpackages
   - My package is split into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
   - <details>
@@ -10,24 +8,28 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       ```
       iitk-coin
       ├── database
-      │   └── commonOps.go
       │   └── init.go
-      │   └── txnOps.go
+      │   └── redis.go
+      │   └── sqlite_txn_ops.go
+      │   └── sqlite.go
       ├── global
-      │   └── globalObjects.go
+      │   └── global_objs.go
       │   └── init.go
       ├── handlers
       │   ├── balance.go
-      │   ├── loginpage.go
+      │   ├── confirm.go
+      │   ├── logine.go
       │   ├── redeem.go
       │   ├── reward.go
-      │   ├── secretpage.go
-      │   └── signuppage.go
+      │   ├── secret_page.go
+      │   └── signup.go
       │   └── transfer.go
       ├── server
       │   ├── jwt.go
+      │   ├── otp.go
       │   └── respond.go
       ├── .env
+      ├── .env.dev
       ├── .gitignore
       ├── go.mod
       ├── go.sum
@@ -47,10 +49,11 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
 - ### Testing
   I have used this script - http://p.ip.fi/Kb_e to test the endpoints.
 
-- ### Request Format
-  - ##### `/signup` page:
+- ### Request-Response (examples)
+  - ##### `/signup`:
     <details>
       <summary>Click to view</summary>
+      Request-
       
       ```http
       POST /signup HTTP/1.1
@@ -59,16 +62,27 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       Accept: application/json
 
       {
-        "rollno":   <Your_Rollno>,
-        "name":     "<Your_Name>",
-        "password": "<Your_Password>",
-        "batch":    "<Your_Batch>"
+        "rollno":   192197,
+        "name":     "Anonymous3",
+        "iitk_email": "devtest.asish@gmail.com",
+        "password": "Str0NgP@$5w0rD",
+        "batch": "Y19"
+      }
+
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Added user successfully",
+        "error": null
       }
       ```
     </details>
-  - ##### `/login` page:
+  - ##### `/login`:
     <details>
       <summary>Click to view</summary>
+      Request-
       
       ```http
       POST /login HTTP/1.1
@@ -77,86 +91,187 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       Accept: application/json
 
       {
-        "rollno":   <Your_Rollno>,
-        "password": "<Your_Password>"
+        "rollno": 192197,
+        "password": "Str0NgP@$5w0rD"
+      }
+      ```
+      Response body-
+      ```
+      {
+        "message": "Login successful; Token generated successfully",
+        "error": null,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNTUwMTUsInJvbGUiOiIiLCJyb2xsbm8iOjE5MjE5N30.kG52objNZ8sj1Ba1Ogs1JYG0W6xPGZ9sFelAofdo0qU"
       }
       ```
     </details>
   - ##### `/secretpage`:
     <details>
       <summary>Click to view</summary>
+      Request-
       
       ```http
-      GET /secretpage HTTP/1.1
+      GET /secret_page HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
-      Authorization: Bearer <Token>
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNDkzMzIxNywicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.86Iyllo03FGqxvpq1iQCl3Yqs1P3jq_mXlY4O-8F2wI
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "SUCCESS",
+        "error": null,
+        "data": 192197
+      }
       ```
     </details>
   - ##### `/view_coins`:
     <details>
       <summary>Click to view</summary>
+      Request-
       
       ```http
       GET /view_coins HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
-      Authorization: Bearer <Token>
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjM1NDk0OSwicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.E52q8iJw1_m5mxwRZADcbNF6B5srbP0iM97f2tWg-ao
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "SUCCESS",
+        "error": null,
+        "coins": 100
+      }
       ```
     </details>
-  - ##### `/transfer_coins` page:
+  - ##### `/transfer_coins`:
     <details>
       <summary>Click to view</summary>
+      Request-
       
       ```http
       POST /transfer_coins HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
-      Authorization: Bearer <Token>
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4NzUsInJvbGUiOiJBZG1pbiIsInJvbGxubyI6MTgxMTk3fQ.moLUYSlffF3EPxTxI_6k5ePneLhGHzOnB5UmB9IbsQQ
 
       {
-        "receiver":    <Receiver_Rollno>,
-        "amount":      <Amount>,
-        "description": "<Remarks>"
+        "receiver": 192197,
+        "amount": 100,
+        "description": "testing for an eligible sender"
+      }
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Post your otp on http://localhost:8080/confirm_transfer to confirm your transaction",
+        "error": null
       }
       ```
     </details>
-  - ##### `/reward_coins` page:
+  - ##### `/confirm_transfer`:
     <details>
       <summary>Click to view</summary>
+      Request-
+      
+      ```http
+      POST /confirm_transfer HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwMzU3MjEsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.f1vXV40Xb1kgEQQaLGYAymGPzwqBiKHpue7eHmHqZlQ
+
+      {
+        "otp": "612765",
+        "resend": false
+      }
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Transaction Successful: User: #191197 transferred 98 coins to user: #192197",
+        "error": null,
+        "transaction_id": 1529
+      }
+      ```
+    </details>
+  - ##### `/reward_coins`:
+    <details>
+      <summary>Click to view</summary>
+      Request-
       
       ```http
       POST /reward_coins HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
-      Authorization: Bearer <Token>
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4MDcsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.HjwFS35GEVe4k0jz7mLwrJOyTM51hQZTyJmeJHvwTzo
 
       {
-        "receiver":    <Receiver_Rollno>,
-        "amount":      <Amount>,
-        "description": "<Remarks>"
+        "receiver": 190197,
+        "amount": 100,
+        "description": "Testing for admin"
+      }
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Reward Successful; User: #190197 was rewarded with 200 coins",
+        "error": null,
+        "transaction_id": 14
       }
       ```
     </details>
-  - ##### `/redeem` page:
+  - ##### `/redeem`:
     <details>
-      <summary>Click to view example request-response</summary>
+      <summary>Click to view</summary>
+      Request-
       
       ```http
       POST /redeem HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjQwOTMxMSwicm9sZSI6IiIsInJvbGxubyI6MTkyMTk3fQ.Rhe8kysvwYe8WC_kNEeithxaf-lHw1FgE1urJld1Y6g
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
 
       {
-        "item_id": 91021,
-        "price": 50,
+        "item_id": 91051,
+        "amount": 100,
         "description": "Testing an eligible sender."
+      }
+      ```
+      Response body-
+
+      ```
+      {
+        "message": "Post your otp to http://localhost:8080/confirm_redeem_request to confirm your transaction",
+        "error": null
+      }
+      ```
+    </details>
+  - ##### `/confirm_redeem_request`:
+    <details>
+      <summary>Click to view</summary>
+      Request-
+      
+      ```http
+      POST /confirm_redeem_request HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
+
+      {
+        "otp": "273801",
+        "resend": false
       }
       ```
       Response body-
@@ -165,13 +280,13 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       {
         "message": "Redeem request successful",
         "error": null,
-        "request_id": 4
+        "request_id": 3
       }
       ```
     </details>
-  - ##### `/redeem_requests` page:
+  - ##### `/redeem_requests`:
     <details>
-      <summary>Click to view example request-response</summary>
+      <summary>Click to view</summary>
       
       ```http
       GET /redeem_requests HTTP/1.1
@@ -207,9 +322,9 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       }
       ```
     </details>
-  - ##### `/update_redeem_status` page:
+  - ##### `/update_redeem_status`:
     <details>
-      <summary>Click to view example request-response</summary>
+      <summary>Click to view</summary>
       
       ```http
       POST /update_redeem_status HTTP/1.1
@@ -236,9 +351,9 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       }
       ```
     </details>
-  - ##### `/redeem_status` page:
+  - ##### `/redeem_status`:
     <details>
-      <summary>Click to view example request-response</summary>
+      <summary>Click to view</summary>
       
       ```http
       GET /redeem_requests HTTP/1.1
@@ -294,10 +409,6 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
       }
       ```
     </details>
-  Sample requests for each endpoint are specified at the beginning of each of the handler functions.
-
-- ### Response Format
-  For the response format for each endpoint please look at the `global` package, where some global objects (variables and struct types) are defined, to be used in other functions.
 
 - ### Common Response Method
   Although the endpoints have slightly different formats for their response object, all of them are handled using a `type-switch` in a common `server.Respond()` function which responds to requests for all the endpoints. This method has been used a lot of times in various files. It has greatly reduced the bulkiness of codes in individual files.
@@ -306,24 +417,51 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
   A suitable http status code is assigned to every response.
 
 - ### Database
-  The `init()` function of the `database` package automatically initializes the database. The initialization errors are handled before making any other database operations. Currently `sqlite` is used as the database management system. If in the future I wish to switch to any other SQL based database management system, I will just have to change one line of code in the `database` package, and import the corresponding package required for it.
+  I have used two database management systems in this application, `SQLite` and `Redis`. The `init()` function of the `database` package automatically initializes the databases. The initialization errors are handled before making any other database operations.
 
 - ### .env
   - The `.env` file contains the `Secret Key` to sign the JWT, the variable `Maximum Cap` for the coins and the variable `Minimum Events` which is a for users to be eligible for transactions. It is deliberately left out of `.gitignore` for the purposes of checking.
   - If an `.env` file is not found the defult values of these environment variables will be used throughout.
   - My intention was to make it convenient for one who is running the backend to be able to update these varibles in the `.env` file without having to search for them in the code. And I have made it so that, if these environment variables are updated here these values will be overwritten to the variables defined inside the code.
+  - There is also a file named `.env.dev` that contains a the gmailid and password for a test account from which all OTPs are sent.
 
 - ### Access Token
   Expiry Time is currently set to 30 minutes.
 
-- ### Refresh Token
-  Not implemented yet.
+- ### Refresh Token (or similar)
+  To be implemented soon.
 
 - ### Cap for Maximum Coins
   Currently set to `10001` coins.
 
 - ### Minimum Events
   Currently set to `6`.
+
+- ### Redeem
+  The functionalities currently available are -
+  - Users can send redeem requests which will be in pending state by default. This is present in the `/redeem` endpoint. Once a valid request is made, an OTP is send to the user's emailid (that was collected during signup).
+  - An Admin can see a list of all pending redeem requests on the `/redeem_requests` endpoint
+  - Users can see the status of all their requests on the `/redeem_status` endpoint
+  - An Admin can "Accept" or "Reject" a redeem request on the `/update_redeem_status`endpoint
+
+- ### OTP
+  - `OTP` based confirmation systems are implemented on the `/redeem` and the `/transfer_coins`. The respective OTPs will have to be POSTed on the endpoints `/confirm_redeem_request` and `/confirm_transfer`.
+  - There is also a `Resend OTP` option available (only at the confirmation endpoints). If a user wants to get another OTP, they have to POST a request with `resend` value set to `true`.
+
+- ### The Process of Confirmation
+  1. The user sends a request (on one of the endpoints - `/redeem` or `/transfer_coins`)
+  2. If the request is invalid the server responds with the messages and errors
+  3. If the request is valid -
+      - An OTP is generated.
+      - The OTP along with the data that needs to be stored in the required tables is temporarily saved in the `Redis` database. Expiry time is set to 2 mins currently.
+      - The OTP is sent to the user's emailid.
+      - If the correct OTP is not entered, the process ends with an error message unless the user sets the `resend` option to be true.
+        - If the resend option is true, one can enter the OTP again with a new POST request on the same endpoint
+      - If the OTP is successfully entered and there is no error while storing the data in the required tables
+        - Immediately, the data along with the OTP is deleted from the `Redis` database.
+      - If no request is made within this expiry time of 2 mins (not even a resend), the main data to be stored is lost
+  
+  *One can potentially delay the process (of transfer/redeem) if they keep on resending the OTP before the current one expires. But, this can be done until the `JWT` token expires, after which the user has to login again.*
 
 ---
 ### For my reference:
@@ -332,9 +470,10 @@ Sorry for the delay in submitting task-5. I'll update few more things in the REA
 - [x] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized, ...
 - [x] batch, txn depends on batch
 - [X] make redeem_coins endpts.
-- [ ] implement OTP
+- [X] implement OTP
+- [X] Use Redis
 - [ ] use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`
-- [ ] use refresh token
+- [ ] use refresh token/similar
 - [ ] check isAdmin from token and then authorize to /secretPage
 - [ ] a new table `auth` for storing just rollnos and passwords?
 - [ ] keep checking for unhandled errors

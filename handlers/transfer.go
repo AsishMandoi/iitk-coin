@@ -87,7 +87,7 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		server.Respond(w, payload, 200, "Post your otp to http://localhost:8080/confirm_transfer to confirm your transaction", nil)
+		server.Respond(w, payload, 200, "Post your otp on http://localhost:8080/confirm_transfer to confirm your transaction", nil)
 
 		// REDIRECT WILL NOT WORK
 		// http.Redirect(w, r, "/confirm_transfer", http.StatusPermanentRedirect)
