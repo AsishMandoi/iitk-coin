@@ -10,7 +10,7 @@ import (
 )
 
 // Making a redeem request
-func Redeem(w http.ResponseWriter, r *http.Request) {
+func NewRedeemReq(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.DefaultRespBody{} // Body of the response to be sent
 	if r.Method == "POST" {
@@ -34,21 +34,21 @@ func Redeem(w http.ResponseWriter, r *http.Request) {
 		userRoll := int(claims["rollno"].(float64))
 		userEmail := claims["email"].(string)
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
 
-		// Generate OTP, save it (along with other details) in the database with an expiry time and then send it
+		// Generate OTP, save it (along with other details) in the redis database with an expiry time and then send it
 		if msg, err := server.SendOTP(userEmail, global.RedeemObj{userRoll, body.Item_id, body.Amount, body.Descr, ""}, "redeem"); err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
 
-		server.Respond(w, payload, 200, "Post your otp to http://localhost:8080/confirm_redeem_request to confirm your transaction", nil)
+		server.Respond(w, payload, 200, "Post your otp to http://localhost:8080/redeems/new/confirm to confirm your transaction", nil)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /redeem page! Please use a POST method to make a redeem request.", nil)
+		server.Respond(w, payload, 501, "Welcome to /redeems/new page! Please use a POST method to make a redeem request.", nil)
 	}
 }
 
@@ -76,7 +76,7 @@ func UpdateRedeemStatus(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
@@ -89,12 +89,12 @@ func UpdateRedeemStatus(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /update_redeem_status page! Please use a POST method to update the status of a redeem request.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /redeems/update page! Please use a POST method to update the status of a redeem request.", nil, nil)
 	}
 }
 
 // Check the status of all redeem requests
-// Will later add a functionality of - show the status of requests before/after a certain date or between 2 dates
+// Will later add a functionality to - show the status of requests before/after a certain date or between 2 dates
 func ViewRedeemStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.DefaultDataRespBody{} // Body of the response to be sent
@@ -109,7 +109,7 @@ func ViewRedeemStatus(w http.ResponseWriter, r *http.Request) {
 
 		usr := int(claims["rollno"].(float64))
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
@@ -122,12 +122,12 @@ func ViewRedeemStatus(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /redeem_status page! Please use a GET method to view the status of a redeem request.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /redeems page! Please use a GET method to view the status of a redeem request.", nil, nil)
 	}
 }
 
 // See all pending redeem requests (Admin only)
-// Will later add a functionality of - show the pending requests before/after a certain date or between 2 dates
+// Will later add a functionality to - show the pending requests before/after a certain date or between 2 dates
 func ViewRedeemRequests(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.DefaultDataRespBody{} // Body of the response to be sent
@@ -141,12 +141,12 @@ func ViewRedeemRequests(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Making sure that an Admin is updating the redeem request status
-		if claims["role"] != "Admin" {
+		if claims["role"].(string) != "Admin" {
 			server.Respond(w, payload, 401, nil, "User unauthorized to view redeem requests", nil)
 			return
 		}
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
@@ -159,6 +159,6 @@ func ViewRedeemRequests(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /redeem_requests page! Please use a GET method to view pending redeem requests.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /redeems page! Please use a GET method to view pending redeem requests.", nil, nil)
 	}
 }

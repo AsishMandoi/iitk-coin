@@ -117,18 +117,18 @@ func UpdRdmSts(redeemReq global.RedeemStatusUPDBody) (interface{}, error) {
 
 		res, err := txn.Exec("UPDATE users SET coins=coins-($1) WHERE rollno=($2) AND coins>=($1);", redeemReq.Coins, redeemReq.User)
 		if err != nil {
-			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows, err := res.RowsAffected(); err != nil {
-			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows != 1 {
-			return nil, fmt.Errorf("Could not accept redeem request for user#%v; Possible errors - insufficient funds in redeemer's account or user may have been deleted from the database", redeemReq.User)
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v: Possible errors - insufficient funds in redeemer's account or user may have been deleted from the database", redeemReq.User)
 		}
 
-		res, err = txn.Exec("UPDATE redeemRequests SET status=1, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id)
+		res, err = txn.Exec("UPDATE redeemRequests SET status=1, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND redeemer=(?) AND amount=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id, redeemReq.User, redeemReq.Coins)
 		if err != nil {
-			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows, err := res.RowsAffected(); err != nil {
-			return nil, fmt.Errorf("Could not accept redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not accept redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows != 1 {
 			return nil, fmt.Errorf("Could not accept redeem request for user#%v", redeemReq.User)
 		}
@@ -139,13 +139,13 @@ func UpdRdmSts(redeemReq global.RedeemStatusUPDBody) (interface{}, error) {
 		}
 		return redeemReq.Id, nil
 	} else {
-		res, err := db.Exec("UPDATE redeemRequests SET status=0, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id)
+		res, err := db.Exec("UPDATE redeemRequests SET status=0, description=(?), responded_on=CURRENT_TIMESTAMP WHERE id=(?) AND redeemer=(?) AND amount=(?) AND status NOT IN (0, 1);", redeemReq.Descr, redeemReq.Id, redeemReq.User, redeemReq.Coins)
 		if err != nil {
-			return nil, fmt.Errorf("Could not reject redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows, err := res.RowsAffected(); err != nil {
-			return nil, fmt.Errorf("Could not reject redeem request for user#%v; %v", redeemReq.User, err)
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v: %v", redeemReq.User, err)
 		} else if cntRows != 1 {
-			return nil, fmt.Errorf("Could not reject redeem request for user#%v; Possible error - status may have already been updated", redeemReq.User)
+			return nil, fmt.Errorf("Could not reject redeem request for user#%v: status may have already been updated or the updation request was invalid", redeemReq.User)
 		}
 		return nil, nil
 	}

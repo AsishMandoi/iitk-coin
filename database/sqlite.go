@@ -43,6 +43,18 @@ func Add(usr global.Stu) (string, error) {
 	return "Added user successfully", nil
 }
 
+func UpdPwd(rollno int, pwd string) error {
+	res, err := db.Exec("UPDATE users SET password=(?) WHERE rollno=(?);", pwd, rollno)
+	if err != nil {
+		return err
+	} else if cntRows, err := res.RowsAffected(); err != nil {
+		return fmt.Errorf("Could not update password for user#%v: %v", rollno, err)
+	} else if cntRows != 1 {
+		return fmt.Errorf("Could not update password for user#%v", rollno)
+	}
+	return nil
+}
+
 var reqId int
 var usr int
 var itemId int

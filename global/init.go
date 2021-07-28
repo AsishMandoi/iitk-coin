@@ -14,7 +14,7 @@ func init() {
 		fmt.Println("Warning: Could not load .env file; Your environment variables will be empty by default.")
 	}
 
-	SignatureKey, MyGmailId, MyPwd = []byte(os.Getenv("SECRET_KEY")), os.Getenv("GMAILID"), os.Getenv("PASSWORD")
+	SignatureKey, MyGmailId, MyPwd = os.Getenv("SECRET_KEY"), os.Getenv("GMAILID"), os.Getenv("PASSWORD")
 
 	var parseErr error
 	MaxCap, parseErr = strconv.ParseFloat(os.Getenv("MAX_CAP"), 64)

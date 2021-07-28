@@ -2,10 +2,93 @@ package database
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/AsishMandoi/iitk-coin/global"
 	"github.com/gomodule/redigo/redis"
 )
+
+func SetJWTid(rollno int, jti string) error {
+	conn := pool.Get()
+	defer conn.Close()
+
+	// The commands between MULTI and EXEC are made atomic
+	err := conn.Send("MULTI")
+	if err != nil {
+		return err
+	}
+	err = conn.Send("HSET", "token:"+fmt.Sprint(rollno), "jwtId", jti)
+	if err != nil {
+		return err
+	}
+	err = conn.Send("EXPIRE", "token:"+fmt.Sprint(rollno), (global.TknExpTime*int(time.Minute))/int(time.Second))
+	if err != nil {
+		return err
+	}
+	_, err = conn.Do("EXEC")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetJWTid(rollno int) (string, error) {
+	conn := pool.Get()
+	defer conn.Close()
+
+	jwtId, err := redis.String(conn.Do("HGET", "token:"+fmt.Sprint(rollno), "jwtId"))
+	if err != nil {
+		return "", err
+	}
+	return jwtId, nil
+}
+
+func SetPwdResetDetails(resetPwd global.PwdResetObj) error {
+	conn := pool.Get()
+	defer conn.Close()
+
+	// The commands between MULTI and EXEC are made atomic
+	err := conn.Send("MULTI")
+	if err != nil {
+		return err
+	}
+	err = conn.Send("HMSET", "resetPwd:"+fmt.Sprint(resetPwd.Rollno), "pwd", resetPwd.NewPwd, "otp", resetPwd.Otp)
+	if err != nil {
+		return err
+	}
+	err = conn.Send("EXPIRE", "resetPwd:"+fmt.Sprint(resetPwd.Rollno), 120)
+	if err != nil {
+		return err
+	}
+	_, err = conn.Do("EXEC")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetPwdResetDetails(rollno int) (global.PwdResetObj, string, error) {
+	conn := pool.Get()
+	defer conn.Close()
+
+	resetPwd := struct {
+		Pwd string `redis:"pwd"`
+		Otp string `redis:"otp"`
+	}{}
+
+	values, err := redis.Values(conn.Do("HGETALL", "resetPwd:"+fmt.Sprint(rollno)))
+	if err != nil {
+		return global.PwdResetObj{}, "password reset details not found", err
+	} else if len(values) == 0 {
+		return global.PwdResetObj{}, "password reset details not found", fmt.Errorf("Possible error - password reset request expired")
+	}
+
+	if err := redis.ScanStruct(values, &resetPwd); err != nil {
+		return global.PwdResetObj{}, "cannot decode password reset details", err
+	}
+
+	return global.PwdResetObj{rollno, resetPwd.Pwd, resetPwd.Otp}, "", nil
+}
 
 func SetTfrDetails(tfr global.TxnObj) error {
 	conn := pool.Get()
@@ -121,6 +204,17 @@ func DelRdmDetails(redeemer int) error {
 	defer conn.Close()
 
 	_, err := conn.Do("HDEL", "redeemDetails:"+fmt.Sprint(redeemer), "itemId", "amount", "descr", "otp")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DelPwdResetDetails(rollno int) error {
+	conn := pool.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("HDEL", "resetPwd:"+fmt.Sprint(rollno), "pwd", "otp")
 	if err != nil {
 		return err
 	}

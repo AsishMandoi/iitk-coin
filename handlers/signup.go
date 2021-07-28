@@ -10,8 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// POST request format
-// --data {"rollno": 190197, "name": "Someone Cool", "password": "sTr0nG-p@$5w0rD",  "batch": "Y19"}
 func Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -36,7 +34,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		// The hashed user password should be stored instead of the plaintext version
 		usr.Password = string(hashedPassword)
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return

@@ -1,11 +1,12 @@
 package global
 
 // Defualt values
-var SignatureKey = []byte("")
+var SignatureKey = ""
 var MaxCap = 101.0
 var MinEvents = 5
 var MyGmailId string
 var MyPwd string
+var TknExpTime = 30  // 30 mins
 
 type Stu struct {
 	Rollno   int    `json:"rollno"`
@@ -93,4 +94,10 @@ type UserRedeemState struct {
 	Status      string      `json:"status"`
 	RequestedOn interface{} `json:"requested_on"`
 	RespondedOn interface{} `json:"responded_on"`
+}
+
+type PwdResetObj struct {
+	Rollno int    `json:"rollno"`
+	NewPwd string `json:"new_password"`
+	Otp    string `json:"otp"`
 }

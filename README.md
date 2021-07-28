@@ -53,7 +53,7 @@
   - ##### `/signup`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
       POST /signup HTTP/1.1
@@ -70,7 +70,7 @@
       }
 
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -82,7 +82,7 @@
   - ##### `/login`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
       POST /login HTTP/1.1
@@ -95,7 +95,7 @@
         "password": "Str0NgP@$5w0rD"
       }
       ```
-      Response body-
+      Response body:
       ```
       {
         "message": "Login successful; Token generated successfully",
@@ -107,7 +107,7 @@
   - ##### `/secretpage`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
       GET /secret_page HTTP/1.1
@@ -116,7 +116,7 @@
       Accept: application/json
       Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNDkzMzIxNywicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.86Iyllo03FGqxvpq1iQCl3Yqs1P3jq_mXlY4O-8F2wI
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -129,7 +129,7 @@
   - ##### `/view_coins`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
       GET /view_coins HTTP/1.1
@@ -138,7 +138,7 @@
       Accept: application/json
       Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjM1NDk0OSwicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.E52q8iJw1_m5mxwRZADcbNF6B5srbP0iM97f2tWg-ao
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -148,13 +148,13 @@
       }
       ```
     </details>
-  - ##### `/transfer_coins`:
+  - ##### `/transfer`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
-      POST /transfer_coins HTTP/1.1
+      POST /transfer HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -166,22 +166,22 @@
         "description": "testing for an eligible sender"
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
-        "message": "Post your otp on http://localhost:8080/confirm_transfer to confirm your transaction",
+        "message": "Post your otp on http://localhost:8080/transfer/confirm to confirm your transaction",
         "error": null
       }
       ```
     </details>
-  - ##### `/confirm_transfer`:
+  - ##### `/transfer/confirm`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
-      POST /confirm_transfer HTTP/1.1
+      POST /transfer/confirm HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -192,7 +192,7 @@
         "resend": false
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -202,13 +202,13 @@
       }
       ```
     </details>
-  - ##### `/reward_coins`:
+  - ##### `/reward`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
-      POST /reward_coins HTTP/1.1
+      POST /reward HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -220,7 +220,7 @@
         "description": "Testing for admin"
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -230,13 +230,13 @@
       }
       ```
     </details>
-  - ##### `/redeem`:
+  - ##### `/redeems/new`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
-      POST /redeem HTTP/1.1
+      POST /redeems/new HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -248,22 +248,22 @@
         "description": "Testing an eligible sender."
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
-        "message": "Post your otp to http://localhost:8080/confirm_redeem_request to confirm your transaction",
+        "message": "Post your otp to http://localhost:8080/redeems/new/confirm to confirm your transaction",
         "error": null
       }
       ```
     </details>
-  - ##### `/confirm_redeem_request`:
+  - ##### `/redeems/new/confirm`:
     <details>
       <summary>Click to view</summary>
-      Request-
+      Request:
       
       ```http
-      POST /confirm_redeem_request HTTP/1.1
+      POST /redeems/new/confirm HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -274,7 +274,7 @@
         "resend": false
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -284,18 +284,18 @@
       }
       ```
     </details>
-  - ##### `/redeem_requests`:
+  - ##### `/redeems`:
     <details>
       <summary>Click to view</summary>
       
       ```http
-      GET /redeem_requests HTTP/1.1
+      GET /redeems HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
       Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -322,12 +322,12 @@
       }
       ```
     </details>
-  - ##### `/update_redeem_status`:
+  - ##### `/redeems/update`:
     <details>
       <summary>Click to view</summary>
       
       ```http
-      POST /update_redeem_status HTTP/1.1
+      POST /redeems/update HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -341,7 +341,7 @@
         "description": "Testing an Admin"
       }
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -351,18 +351,18 @@
       }
       ```
     </details>
-  - ##### `/redeem_status`:
+  - ##### `/redeems`:
     <details>
       <summary>Click to view</summary>
       
       ```http
-      GET /redeem_requests HTTP/1.1
+      GET /redeems HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
       Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
       ```
-      Response body-
+      Response body:
 
       ```
       {
@@ -437,21 +437,21 @@
 - ### Minimum Events
   Currently set to `6`.
 
-- ### Redeem
-  The functionalities currently available are -
-  - Users can send redeem requests which will be in pending state by default. This is present in the `/redeem` endpoint. Once a valid request is made, an OTP is send to the user's emailid (that was collected during signup).
-  - An Admin can see a list of all pending redeem requests on the `/redeem_requests` endpoint
-  - Users can see the status of all their requests on the `/redeem_status` endpoint
-  - An Admin can "Accept" or "Reject" a redeem request on the `/update_redeem_status`endpoint
+- ### Redeem  
+  The functionalities currently available are:<br />
+  - Users can send redeem requests which will be in pending state by default. This is present in the `/redeems/new` endpoint. Once a valid request is made, an OTP is send to the user's emailid (that was collected during signup).
+  - An Admin can see a list of all pending redeem requests on the `/redeems` endpoint
+  - Users can see the status of all their requests on the `/redeems` endpoint
+  - An Admin can "Accept" or "Reject" a redeem request on the `/redeems/update`endpoint
 
 - ### OTP
-  - `OTP` based confirmation systems are implemented on the `/redeem` and the `/transfer_coins`. The respective OTPs will have to be POSTed on the endpoints `/confirm_redeem_request` and `/confirm_transfer`.
+  - `OTP` based confirmation systems are implemented on the `/redeems/new` and the `/transfer`. The respective OTPs will have to be POSTed on the endpoints `/redeems/new/confirm` and `/transfer/confirm`.
   - There is also a `Resend OTP` option available (only at the confirmation endpoints). If a user wants to get another OTP, they have to POST a request with `resend` value set to `true`.
 
 - ### The Process of Confirmation
-  1. The user sends a request (on one of the endpoints - `/redeem` or `/transfer_coins`)
-  2. If the request is invalid the server responds with the messages and errors
-  3. If the request is valid -
+  1. The user sends a request (on one of the endpoints - `/redeems/new` or `/transfer`)
+  1. If the request is invalid the server responds with the messages and errors
+  1. If the request is valid -
       - An OTP is generated.
       - The OTP along with the data that needs to be stored in the required tables is temporarily saved in the `Redis` database. Expiry time is set to 2 mins currently.
       - The OTP is sent to the user's emailid.
@@ -478,20 +478,35 @@
 - [ ] a new table `auth` for storing just rollnos and passwords?
 - [ ] keep checking for unhandled errors
 
-A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway. – [Travis Terry](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
-
-Turn on the Write-Ahead Logging, Disable connections pool --[link1](https://stackoverflow.com/questions/35804884/sqlite-concurrent-writing-performance/35805826), [link2](https://sqlite.org/wal.html)
-
-Once Commit or Rollback is called on the transaction, that transaction's connection is returned to DB's idle connection pool. The pool size can be controlled with SetMaxIdleConns. --[link](https://golang.org/pkg/database/sql/#DB)
-
 ---
-> As a general rule of thumb, if you can use structs to represent your JSON data, you should use them. The only good reason to use maps would be if it were not possible to use structs due to the uncertain nature of the keys or values in the data.
 
-> Two concurrent executions can interleave such that your read values become stale.
+#### Some incredibly helpful resources
 
-Solutions:
-1. Do the read, write and validation checks in a single sql statement which is of write nature (so that it acquires lock).
-2. Use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`, (more specific errors can be handled)
+> A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway.\
+> [Travis Terry (stackoverflow)](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
+
+> Turn on the Write-Ahead Logging, Disable connections pool\
+> [sqlite-concurrent-writing-performance (stackoverflow)](https://stackoverflow.com/questions/35804884/sqlite-concurrent-writing-performance/35805826), [Write-Ahead Logging (sqlite.org)](https://sqlite.org/wal.html)
+
+> Once Commit or Rollback is called on the transaction, that transaction's connection is returned to DB's idle connection pool. The pool size can be controlled with SetMaxIdleConns.\
+> [sql documentation (golang.org)](https://golang.org/pkg/database/sql/#DB)
+
+> As a general rule of thumb, if you can use structs to represent your JSON data, you should use them. The only good reason to use maps would be if it were not possible to use structs due to the uncertain nature of the keys or values in the data.\
+> [Soham Kamani](https://www.sohamkamani.com/golang/parsing-json/#what-to-use-structs-vs-maps)
+
+> Some of the commands (in redis), especially with `the string data structure`, only make sense given specific type of data.\
+> ...\
+> `Hashes` are a good example of why calling Redis a key-value store isn’t quite accurate. You see, in a lot of ways, hashes are like strings. The important difference is that they provide an extra level of indirection: a field.\
+> ...\
+> The benefit would be the ability to pull and update/delete specific pieces of data, without having to get or write the entire value.\
+> [The Little Redis Book - Karl Seguin](https://www.openmymind.net/redis.pdf)
+
+> Two concurrent executions can interleave such that your read values become stale.\
+  > Solutions:
+  > 1. Do the read, write and validation checks in a single sql statement which is of write nature (so that it acquires lock), or
+  > 2. Use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`, (more specific errors can be handled)
+>
+> [Bhuvan Singla](https://github.com/bhuvansingla)
 
 **In which line is the DB actually locked in the default (`DEFERRED`) mode?**
 

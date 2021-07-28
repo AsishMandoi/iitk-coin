@@ -10,9 +10,6 @@ import (
 	"github.com/AsishMandoi/iitk-coin/server"
 )
 
-// POST request format
-// --header 'Authorization: Bearer qWd3EjkVn-e6n.kJfvm82s3Fo@~389r$dml3-0v.s*Hsi&2-Y4'
-// --data '{"receiver": 190197, "amount": 500, "desription": "samose kha lena"}'
 func TransferCoins(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.DefaultRespBody{} // Body of the response to be sent
@@ -37,7 +34,7 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return
@@ -45,7 +42,6 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 
 		senderRoll := int(claims["rollno"].(float64))
 		senderBatch := claims["batch"].(string)
-		// fmt.Printf("%v->(%T)\n\n\n", claims["email"], claims["email"])
 		senderEmail := claims["email"].(string)
 
 		receiverBatch, receiverRole, err := database.GetBatchnRole(body.Receiver)
@@ -81,19 +77,13 @@ func TransferCoins(w http.ResponseWriter, r *http.Request) {
 			amtRcvd = body.Amount * 0.67
 		}
 
-		// Generate OTP, save it (along with other details) in the database with an expiry time and then send it
+		// Generate OTP, save it (along with other details) in the redis database with an expiry time and then send it
 		if msg, err := server.SendOTP(senderEmail, global.TxnObj{senderRoll, body.Receiver, body.Amount, amtRcvd, body.Descr, ""}, "transfer"); err != nil {
 			server.Respond(w, payload, 500, msg, err.Error())
 			return
 		}
-
-		server.Respond(w, payload, 200, "Post your otp on http://localhost:8080/confirm_transfer to confirm your transaction", nil)
-
-		// REDIRECT WILL NOT WORK
-		// http.Redirect(w, r, "/confirm_transfer", http.StatusPermanentRedirect)
-
-		// ???? http.RedirectHandler()
+		server.Respond(w, payload, 200, "Post your otp on http://localhost:8080/transfer/confirm to confirm your transaction", nil)
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /transfer_coins page! Please use a POST method to send coins to another user.", nil)
+		server.Respond(w, payload, 501, "Welcome to /transfer page! Please use a POST method to send coins to another user.", nil)
 	}
 }

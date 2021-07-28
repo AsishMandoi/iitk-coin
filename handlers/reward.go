@@ -11,9 +11,6 @@ import (
 	"github.com/AsishMandoi/iitk-coin/server"
 )
 
-// POST request format
-// --header 'Authorization: Bearer qWd3EjkVn%e6n.kJfvm82s3Fo@~389r$dml3@0v.s*Hsi&2-Y4'
-// --data '{"receiver": 190197, "amount": 500, "description": "Particapation in Event XYZ"}'
 func RewardCoins(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	payload := &global.TxnRespBody{} // Body of the response to be sent
@@ -46,7 +43,7 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 
 		sender := int(claims["rollno"].(float64))
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
@@ -71,6 +68,6 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil, txnId)
 		}
 	} else {
-		server.Respond(w, payload, 501, "Welcome to /reward_coins page! Please use a POST method to reward a user.", nil, nil)
+		server.Respond(w, payload, 501, "Welcome to /reward page! Please use a POST method to reward a user.", nil, nil)
 	}
 }

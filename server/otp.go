@@ -28,20 +28,26 @@ func SendOTP(emailid string, details interface{}, job string) (string, error) {
 		return "Transaction failed: Could not generate OTP", err
 	}
 
-	var tfr global.TxnObj
-	var rdm global.RedeemObj
+	// var tfr global.TxnObj
+	// var rdm global.RedeemObj
 
 	// STORE ALL DETAILS along with the otp IN THE REDIS DB with an expiry time
 	if job == "transfer" {
-		tfr = details.(global.TxnObj)
+		tfr := details.(global.TxnObj)
 		tfr.Otp = otpStr
 		if err = database.SetTfrDetails(tfr); err != nil {
 			return "Transaction failed: Could not store OTP", err
 		}
-	} else {
-		rdm = details.(global.RedeemObj)
+	} else if job == "redeem" {
+		rdm := details.(global.RedeemObj)
 		rdm.Otp = otpStr
 		if err = database.SetRdmDetails(rdm); err != nil {
+			return "Transaction failed: Could not store OTP", err
+		}
+	} else {
+		pwdReset := details.(global.PwdResetObj)
+		pwdReset.Otp = otpStr
+		if err = database.SetPwdResetDetails(pwdReset); err != nil {
 			return "Transaction failed: Could not store OTP", err
 		}
 	}
@@ -54,15 +60,21 @@ func SendOTP(emailid string, details interface{}, job string) (string, error) {
 	m.SetHeader("To", emailid)
 	if job == "transfer" {
 		m.SetHeader("Subject", "OTP for Transfer")
-	} else {
+	} else if job == "redeem" {
 		m.SetHeader("Subject", "OTP for Redeem")
+	} else {
+		m.SetHeader("Subject", "OTP for Password Reset")
 	}
 
-	// Plain text body
-	// m.SetBody("text/plain", "This is a test email for IITK-Coin. There is no actual transaction going on.\nThe OTP for your transaction is\n"+otpStr+"\nThis OTP will expire in 2 minutes.\nDO NOT share it with anyone.\n\nIf this OTP was not requested by you, make sure to change your password immediately.\n\n\nRegards,\nAsish\nIITK-Coin")
-
+	body := "<p><i>This is a test email for IITK-Coin.</i></p><p>The OTP "
+	if job == "resetPwd" {
+		body += "to reset your password is <h2>"
+	} else {
+		body += "for your transaction is <h2>"
+	}
+	body += otpStr + "</h2></p><p>This OTP will expire in 2 minutes. DO NOT share it with anyone.<br><br>If this OTP was not requested by you, make sure to <b>change your password immediately</b>.</p><h4>IITK-Coin</h4>"
 	// HTML body
-	m.SetBody("text/html", "<p><i>This is a test email for IITK-Coin. There is no actual transaction going on.</i></p><p>The OTP for your transaction is<br><h2>"+otpStr+"</h2></p><p>This OTP will expire in 2 minutes. DO NOT share it with anyone.<br><br>If this OTP was not requested by you, make sure to <b>change your password immediately</b>.<br><br><br>Regards,<br>Asish<br>IITK-Coin</p>")
+	m.SetBody("text/html", body)
 
 	d := mail.NewDialer(gmailHost, gmailPort, global.MyGmailId, global.MyPwd)
 

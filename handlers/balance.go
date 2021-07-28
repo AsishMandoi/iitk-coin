@@ -30,7 +30,7 @@ func ViewCoins(w http.ResponseWriter, r *http.Request) {
 		// User rollno present in the token
 		userRollno := int(claims["rollno"].(float64))
 
-		// Handle initialization errors in DB
+		// Handle initialization errors in SQLite DB
 		if msg, err := database.InitMsg, database.InitErr; err != nil {
 			server.Respond(w, payload, 500, msg, err.Error(), nil)
 			return
