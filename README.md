@@ -1,58 +1,60 @@
 # IITK Coin
+*A centralized pseudo-currency system to be used in IIT Kanpur*
 
+## Summary of Features:
+- [x] Easy-to-use Directory structure
+- [x] Suitable HTTP status codes assigned to all responses
+- [X] OTP based endpoints for an added layer of security
+- [X] Redis for temporary storage, fast retrieval of data
+- [X] [Write-Ahead Log (WAL)](https://sqlite.org/wal.html) mode enabled in SQLite
+- [X] A highly secure Access Token implementation
+
+## Overview
 - ### Subpackages
-  - My package is split into multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
-  - <details>
-      <summary>Tree Directory Structure</summary>
-      
-      ```
-      iitk-coin
-      ├── database
-      │   └── init.go
-      │   └── redis.go
-      │   └── sqlite_txn_ops.go
-      │   └── sqlite.go
-      ├── global
-      │   └── global_objs.go
-      │   └── init.go
-      ├── handlers
-      │   ├── balance.go
-      │   ├── confirm.go
-      │   ├── logine.go
-      │   ├── redeem.go
-      │   ├── reward.go
-      │   ├── secret_page.go
-      │   └── signup.go
-      │   └── transfer.go
-      ├── server
-      │   ├── jwt.go
-      │   ├── otp.go
-      │   └── respond.go
-      ├── .env
-      ├── .env.dev
-      ├── .gitignore
-      ├── go.mod
-      ├── go.sum
-      ├── iitkusers.db
-      ├── iitkusers.db-shm
-      ├── iitkusers.db-wal
-      ├── main.go
-      └── README.md
-      ```
-    </details>
-
-- ### Write-Ahead Log
-  - The `journal_mode` is set to `WAL` because of its [advantages](https://sqlite.org/wal.html#overview) over the default, `DELETE` mode in SQLite.
-  - I personally tested in both modes and observed that the `WAL` mode works slightly faster (upto 10x faster) than the default mode while processing **parallelly requested** write operations into the database.
-  - I also tested both the modes (again using parallel curl commands) intentionally keeping the DB locked for a certain time. In the default mode the concurrent requests are bound to be unsuccessful with an `database is locked` error. But, in `WAL` mode requests are handled sequentially and automatically once the db gets unlocked.
-
-- ### Testing
-  I have used this script - http://p.ip.fi/Kb_e to test the endpoints.
+  The main package contains multiple sub-packages (i.e. I have made a few sub-directories - `global`, `handlers`, `server` and `database`).
+  <details>
+    <summary><b>Tree Directory Structure</b></summary>
+    
+    ```
+    iitk-coin
+    ├── database
+    │   └── init.go
+    │   └── redis.go
+    │   └── sqlite_txn_ops.go
+    │   └── sqlite.go
+    ├── global
+    │   └── global_objs.go
+    │   └── init.go
+    ├── handlers
+    │   ├── auth.go
+    │   ├── balance.go
+    │   ├── confirm.go
+    │   ├── redeem.go
+    │   ├── reward.go
+    │   ├── secret_page.go
+    │   ├── signup.go
+    │   └── transfer.go
+    ├── server
+    │   ├── jwt.go
+    │   ├── otp.go
+    │   └── respond.go
+    ├── .env
+    ├── .env.dev
+    ├── .gitignore
+    ├── go.mod
+    ├── go.sum
+    ├── iitkusers.db
+    ├── iitkusers.db-shm
+    ├── iitkusers.db-wal
+    ├── main.go
+    └── README.md
+    ```
+  </details>
 
 - ### Request-Response (examples)
-  - ##### `/signup`:
+  *[click to expand]*
     <details>
-      <summary>Click to view</summary>
+      <summary><b><code>Signup</code></b></summary>
       Request:
       
       ```http
@@ -71,7 +73,6 @@
 
       ```
       Response body:
-
       ```
       {
         "message": "Added user successfully",
@@ -79,9 +80,8 @@
       }
       ```
     </details>
-  - ##### `/login`:
     <details>
-      <summary>Click to view</summary>
+      <summary><b><code>Login</code></b></summary>
       Request:
       
       ```http
@@ -104,9 +104,79 @@
       }
       ```
     </details>
-  - ##### `/secretpage`:
     <details>
-      <summary>Click to view</summary>
+      <summary><b><code>Reset Password (using old password)</code></b></summary>
+      Request:
+      
+      ```http
+      POST /reset_password HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+
+      {
+        "send_otp": false,
+        "old_password": "Str0NgP@$5w0rD",
+        "new_password": "NewStr0NgP@$5w0rD"
+      }
+      ```
+      Response body:
+      ```
+      {
+        "message": "Password reset successful",
+        "error": null
+      }
+      ```
+    </details>
+    <details>
+      <summary><b><code>Reset Password (using OTP)</code></b></summary>
+      Request(I):
+      
+      ```http
+      POST /reset_password HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+
+      {
+        "send_otp": true,
+        "old_password": "",
+        "new_password": "NewStr0NgP@$5w0rD"
+      }
+      ```
+      Response(I) body:
+      ```
+      {
+        "message": "Post your otp on http://localhost:8080/reset_password/confirm to confirm your transaction",
+        "error": null
+      }
+      ```
+      Request(II):
+      
+      ```http
+      POST /reset_password/confirm HTTP/1.1
+      HOST: localhost:8080
+      Content-Type: application/json
+      Accept: application/json
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+
+      {
+        "otp": "554236",
+        "resend": false
+      }
+      ```
+      Response(II) body:
+      ```
+      {
+        "message": "Password reset successful",
+        "error": null
+      }
+      ```
+    </details>
+    <details>
+      <summary><b><code>Access a Secret Page</code></b></summary>
       Request:
       
       ```http
@@ -126,9 +196,8 @@
       }
       ```
     </details>
-  - ##### `/view_coins`:
     <details>
-      <summary>Click to view</summary>
+      <summary><b><code>Check Balance</code></b></summary>
       Request:
       
       ```http
@@ -148,10 +217,9 @@
       }
       ```
     </details>
-  - ##### `/transfer`:
     <details>
-      <summary>Click to view</summary>
-      Request:
+      <summary><b><code>Transfer Coins</code></b></summary>
+      Request(I):
       
       ```http
       POST /transfer HTTP/1.1
@@ -166,7 +234,7 @@
         "description": "testing for an eligible sender"
       }
       ```
-      Response body:
+      Response body(I):
 
       ```
       {
@@ -174,11 +242,7 @@
         "error": null
       }
       ```
-    </details>
-  - ##### `/transfer/confirm`:
-    <details>
-      <summary>Click to view</summary>
-      Request:
+      Request(II):
       
       ```http
       POST /transfer/confirm HTTP/1.1
@@ -192,7 +256,7 @@
         "resend": false
       }
       ```
-      Response body:
+      Response(II) body:
 
       ```
       {
@@ -202,9 +266,8 @@
       }
       ```
     </details>
-  - ##### `/reward`:
     <details>
-      <summary>Click to view</summary>
+      <summary><b><code>Reward Coins</code></b></summary>
       Request:
       
       ```http
@@ -226,14 +289,13 @@
       {
         "message": "Reward Successful; User: #190197 was rewarded with 200 coins",
         "error": null,
-        "transaction_id": 14
+        "transaction_id": 1456
       }
       ```
     </details>
-  - ##### `/redeems/new`:
     <details>
-      <summary>Click to view</summary>
-      Request:
+      <summary><b><code>Make a Redeem request</code></b></summary>
+      Request(I):
       
       ```http
       POST /redeems/new HTTP/1.1
@@ -248,7 +310,7 @@
         "description": "Testing an eligible sender."
       }
       ```
-      Response body:
+      Response(I) body:
 
       ```
       {
@@ -256,11 +318,7 @@
         "error": null
       }
       ```
-    </details>
-  - ##### `/redeems/new/confirm`:
-    <details>
-      <summary>Click to view</summary>
-      Request:
+      Request(II):
       
       ```http
       POST /redeems/new/confirm HTTP/1.1
@@ -274,20 +332,20 @@
         "resend": false
       }
       ```
-      Response body:
+      Response(II) body:
 
       ```
       {
         "message": "Redeem request successful",
         "error": null,
-        "request_id": 3
+        "request_id": 3441
       }
       ```
     </details>
-  - ##### `/redeems`:
     <details>
-      <summary>Click to view</summary>
-      
+      <summary><b><code>See Pending Redeem Requests of all Users</code></b></summary>
+      Request:
+
       ```http
       GET /redeems HTTP/1.1
       HOST: localhost:8080
@@ -322,10 +380,10 @@
       }
       ```
     </details>
-  - ##### `/redeems/update`:
     <details>
-      <summary>Click to view</summary>
-      
+      <summary><b><code>Accept/Reject Redeem requests</code></b></summary>
+      Request:
+
       ```http
       POST /redeems/update HTTP/1.1
       HOST: localhost:8080
@@ -351,12 +409,12 @@
       }
       ```
     </details>
-  - ##### `/redeems`:
     <details>
-      <summary>Click to view</summary>
-      
+      <summary><b><code>Show status of previous Redeems of a user</code></b></summary>
+      Request:
+
       ```http
-      GET /redeems HTTP/1.1
+      GET /redeems/status HTTP/1.1
       HOST: localhost:8080
       Content-Type: application/json
       Accept: application/json
@@ -410,77 +468,76 @@
       ```
     </details>
 
+
+- ### Database
+  I have used two database management systems in this application, `SQLite` and `Redis`. The `init()` function of the `database` package automatically initializes the databases. The initialization errors are handled before making any other database operations.
+
+- ### Write-Ahead Log
+  - The `journal_mode` is set to `WAL` because of its [advantages](https://sqlite.org/wal.html#overview) over the default, `DELETE` mode in SQLite.
+  - I personally tested in both modes and observed that the `WAL` mode works slightly faster (upto 10x faster) than the default mode while processing **parallelly requested** write operations into the database.
+  - I also tested both the modes (again using parallel curl commands) intentionally keeping the DB locked for a certain time. In the default mode the concurrent requests are bound to be unsuccessful with an `database is locked` error. But, in `WAL` mode requests are handled sequentially and automatically once the db gets unlocked.
+
 - ### Common Response Method
   Although the endpoints have slightly different formats for their response object, all of them are handled using a `type-switch` in a common `server.Respond()` function which responds to requests for all the endpoints. This method has been used a lot of times in various files. It has greatly reduced the bulkiness of codes in individual files.
 
 - ### HTTP Status Codes
   A suitable http status code is assigned to every response.
 
-- ### Database
-  I have used two database management systems in this application, `SQLite` and `Redis`. The `init()` function of the `database` package automatically initializes the databases. The initialization errors are handled before making any other database operations.
+- ### Access Token
+  - The Access token has been made even more secure than before. The signature key of the access token changes every time the user logs in. In other words, **only the most recently generated access token is a valid token**.
+  - How does this help?
+    - Earlier, if the access token was somehow stolen, all the damage could have been done for the entire duration of the expiration period of the token, new tokens could have been generated but the damage won't be prevented.
+    - Now, `any access token can be invalidated instantly` once the user relogs in, and one doesn't need to wait for the token to expire.
+  - The signature key is a combination of a `Secret Key` stored in the `.env` file and an `uuid` that is generated along with the JWT.
+  - Expiry time is currently set to `30 minutes`.
 
 - ### .env
-  - The `.env` file contains the `Secret Key` to sign the JWT, the variable `Maximum Cap` for the coins and the variable `Minimum Events` which is a for users to be eligible for transactions. It is deliberately left out of `.gitignore` for the purposes of checking.
+  - The `.env` file contains the `Secret Key`(for signing the access token) to sign the JWT, the variable `Maximum Cap` for the coins and the variable `Minimum Events` which is a for users to be eligible for transactions. It is deliberately left out of `.gitignore` for the purposes of checking.
   - If an `.env` file is not found the defult values of these environment variables will be used throughout.
   - My intention was to make it convenient for one who is running the backend to be able to update these varibles in the `.env` file without having to search for them in the code. And I have made it so that, if these environment variables are updated here these values will be overwritten to the variables defined inside the code.
   - There is also a file named `.env.dev` that contains a the gmailid and password for a test account from which all OTPs are sent.
 
-- ### Access Token
-  Expiry Time is currently set to 30 minutes.
-
-- ### Refresh Token (or similar)
-  To be implemented soon.
-
 - ### Cap for Maximum Coins
-  Currently set to `10001` coins.
+  Upper limit of the balance any user can hold. Currently set to `10001` coins.
 
 - ### Minimum Events
-  Currently set to `6`.
+  It is the minimum number of events to participate in to be eligible to make transactions. Currently set to `6`.
 
-- ### Redeem  
-  The functionalities currently available are:<br />
-  - Users can send redeem requests which will be in pending state by default. This is present in the `/redeems/new` endpoint. Once a valid request is made, an OTP is send to the user's emailid (that was collected during signup).
-  - An Admin can see a list of all pending redeem requests on the `/redeems` endpoint
-  - Users can see the status of all their requests on the `/redeems` endpoint
-  - An Admin can "Accept" or "Reject" a redeem request on the `/redeems/update`endpoint
+- ### Redeem
+  - Users can send redeem requests which will be in pending state by default. This can be done on the `/redeems/new` endpoint. Once a valid request is made, an OTP is send to the user's emailid (that was collected during signup).
+  - An Admin can see a list of all pending redeem requests made by all users on the `/redeems` endpoint.
+  - Users can see the status of all their requests on the `/redeems/status` endpoint.
+  - An Admin can "Accept" or "Reject" a redeem request on the `/redeems/update`endpoint.
+  - Accepted redeem requests are stored in the DB as 1, Rejected ones as 0 and Pending ones as 2.
 
 - ### OTP
-  - `OTP` based confirmation systems are implemented on the `/redeems/new` and the `/transfer`. The respective OTPs will have to be POSTed on the endpoints `/redeems/new/confirm` and `/transfer/confirm`.
+  - `OTP` based confirmation systems are implemented on the `/redeems/new`, the `/transfer` and the `/reset_password` endpoints. The respective OTPs will have to be POSTed on the endpoints `/redeems/new/confirm`, `/transfer/confirm` and `/reset_password/confirm`.
   - There is also a `Resend OTP` option available (only at the confirmation endpoints). If a user wants to get another OTP, they have to POST a request with `resend` value set to `true`.
 
 - ### The Process of Confirmation
-  1. The user sends a request (on one of the endpoints - `/redeems/new` or `/transfer`)
-  1. If the request is invalid the server responds with the messages and errors
-  1. If the request is valid -
+  1. The user sends a request (on one of the endpoints - `/redeems/new` or `/transfer` or `reset/password`)
+  2. If the request is invalid the server responds with suitable error messages
+  3. If the request is valid -
       - An OTP is generated.
-      - The OTP along with the data that needs to be stored in the required tables is temporarily saved in the `Redis` database. Expiry time is set to 2 mins currently.
+      - The OTP along with the rest of the data that needs to be stored/updated is temporarily saved in the `Redis` database. Expiry time is set to `2 mins` currently.
       - The OTP is sent to the user's emailid.
-      - If the correct OTP is not entered, the process ends with an error message unless the user sets the `resend` option to be true.
+      - If the correct OTP is not entered/entered wrong, the process ends with an error message unless the user sets the `resend` option to be true.
         - If the resend option is true, one can enter the OTP again with a new POST request on the same endpoint
-      - If the OTP is successfully entered and there is no error while storing the data in the required tables
+      - If the OTP is successfully entered and there is no error while storing/updating the necessary data
         - Immediately, the data along with the OTP is deleted from the `Redis` database.
       - If no request is made within this expiry time of 2 mins (not even a resend), the main data to be stored is lost
   
   *One can potentially delay the process (of transfer/redeem) if they keep on resending the OTP before the current one expires. But, this can be done until the `JWT` token expires, after which the user has to login again.*
 
----
-### For my reference:
-- [x] look up popular directory structures
-- [x] send a json object in the response for every endpoint
-- [x] use MDN: HTTP status codes -> http.StatusBadRequest, http.StatusUnauthorized, ...
-- [x] batch, txn depends on batch
-- [X] make redeem_coins endpts.
-- [X] implement OTP
-- [X] Use Redis
-- [ ] use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`
-- [ ] use refresh token/similar
-- [ ] check isAdmin from token and then authorize to /secretPage
-- [ ] a new table `auth` for storing just rollnos and passwords?
-- [ ] keep checking for unhandled errors
+- ### Testing
+  I have used this script - http://p.ip.fi/A0uG to test the endpoints for multiple concurrent requests.
 
----
+## More features to be added in the future
+- [ ] Other modes of transaction - `IMMEDIATE`, `EXCLUSIVE` in SQLite
+- [ ] Refresh token/similar for better user experience.
+- [ ] ...
 
-#### Some incredibly helpful resources
+## Some incredibly helpful resources
 
 > A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway.\
 > [Travis Terry (stackoverflow)](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
@@ -507,7 +564,3 @@
   > 2. Use other modes of transaction - `IMMEDIATE`, `EXCLUSIVE`, (more specific errors can be handled)
 >
 > [Bhuvan Singla](https://github.com/bhuvansingla)
-
-**In which line is the DB actually locked in the default (`DEFERRED`) mode?**
-
-  An sqlite DB is locked after one of the write statements (e.g. `UPDATE`, `INSERT`, ...) are executed, irrespective of whether they are in a transaction. This is the default behaviour.
