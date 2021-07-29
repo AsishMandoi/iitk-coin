@@ -54,418 +54,418 @@
 - ### Request-Response (examples)
   *[click to expand]*
     <details>
-      <summary><b><code>Signup</code></b></summary>
-      Request:
-      
-      ```http
-      POST /signup HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
+    <summary><b><code>Signup</code></b></summary>
+    Request:
+    
+    ```http
+    POST /signup HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
 
-      {
-        "rollno":   192197,
-        "name":     "Anonymous3",
-        "iitk_email": "devtest.asish@gmail.com",
-        "password": "Str0NgP@$5w0rD",
-        "batch": "Y19"
-      }
+    {
+      "rollno":   192197,
+      "name":     "Anonymous3",
+      "iitk_email": "devtest.asish@gmail.com",
+      "password": "Str0NgP@$5w0rD",
+      "batch": "Y19"
+    }
 
-      ```
-      Response body:
-      ```
-      {
-        "message": "Added user successfully",
-        "error": null
-      }
-      ```
+    ```
+    Response body:
+    ```
+    {
+      "message": "Added user successfully",
+      "error": null
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Login</code></b></summary>
-      Request:
-      
-      ```http
-      POST /login HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
+    <summary><b><code>Login</code></b></summary>
+    Request:
+    
+    ```http
+    POST /login HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
 
-      {
-        "rollno": 192197,
-        "password": "Str0NgP@$5w0rD"
-      }
-      ```
-      Response body:
-      ```
-      {
-        "message": "Login successful; Token generated successfully",
-        "error": null,
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNTUwMTUsInJvbGUiOiIiLCJyb2xsbm8iOjE5MjE5N30.kG52objNZ8sj1Ba1Ogs1JYG0W6xPGZ9sFelAofdo0qU"
-      }
-      ```
+    {
+      "rollno": 192197,
+      "password": "Str0NgP@$5w0rD"
+    }
+    ```
+    Response body:
+    ```
+    {
+      "message": "Login successful; Token generated successfully",
+      "error": null,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNTUwMTUsInJvbGUiOiIiLCJyb2xsbm8iOjE5MjE5N30.kG52objNZ8sj1Ba1Ogs1JYG0W6xPGZ9sFelAofdo0qU"
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Reset Password (using old password)</code></b></summary>
-      Request:
-      
-      ```http
-      POST /reset_password HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+    <summary><b><code>Reset Password (using old password)</code></b></summary>
+    Request:
+    
+    ```http
+    POST /reset_password HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
 
-      {
-        "send_otp": false,
-        "old_password": "Str0NgP@$5w0rD",
-        "new_password": "NewStr0NgP@$5w0rD"
-      }
-      ```
-      Response body:
-      ```
-      {
-        "message": "Password reset successful",
-        "error": null
-      }
-      ```
+    {
+      "send_otp": false,
+      "old_password": "Str0NgP@$5w0rD",
+      "new_password": "NewStr0NgP@$5w0rD"
+    }
+    ```
+    Response body:
+    ```
+    {
+      "message": "Password reset successful",
+      "error": null
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Reset Password (using OTP)</code></b></summary>
-      Request(I):
-      
-      ```http
-      POST /reset_password HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+    <summary><b><code>Reset Password (using OTP)</code></b></summary>
+    Request(I):
+    
+    ```http
+    POST /reset_password HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
 
-      {
-        "send_otp": true,
-        "old_password": "",
-        "new_password": "NewStr0NgP@$5w0rD"
-      }
-      ```
-      Response(I) body:
-      ```
-      {
-        "message": "Post your otp on http://localhost:8080/reset_password/confirm to confirm your transaction",
-        "error": null
-      }
-      ```
-      Request(II):
-      
-      ```http
-      POST /reset_password/confirm HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
+    {
+      "send_otp": true,
+      "old_password": "",
+      "new_password": "NewStr0NgP@$5w0rD"
+    }
+    ```
+    Response(I) body:
+    ```
+    {
+      "message": "Post your otp on http://localhost:8080/reset_password/confirm to confirm your transaction",
+      "error": null
+    }
+    ```
+    Request(II):
+    
+    ```http
+    POST /reset_password/confirm HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2Mjc0NjUzMTMsInJvbGUiOiIiLCJyb2xsbm8iOjE5MDE5N30.HMdtutBN41UmKw9qTVE9RPSRCKfgDZK02FFyW8rFRgo
 
-      {
-        "otp": "554236",
-        "resend": false
-      }
-      ```
-      Response(II) body:
-      ```
-      {
-        "message": "Password reset successful",
-        "error": null
-      }
-      ```
+    {
+      "otp": "554236",
+      "resend": false
+    }
+    ```
+    Response(II) body:
+    ```
+    {
+      "message": "Password reset successful",
+      "error": null
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Access a Secret Page</code></b></summary>
-      Request:
-      
-      ```http
-      GET /secret_page HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNDkzMzIxNywicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.86Iyllo03FGqxvpq1iQCl3Yqs1P3jq_mXlY4O-8F2wI
-      ```
-      Response body:
+    <summary><b><code>Access a Secret Page</code></b></summary>
+    Request:
+    
+    ```http
+    GET /secret_page HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNDkzMzIxNywicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.86Iyllo03FGqxvpq1iQCl3Yqs1P3jq_mXlY4O-8F2wI
+    ```
+    Response body:
 
-      ```
-      {
-        "message": "SUCCESS",
-        "error": null,
-        "data": 192197
-      }
-      ```
+    ```
+    {
+      "message": "SUCCESS",
+      "error": null,
+      "data": 192197
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Check Balance</code></b></summary>
-      Request:
-      
-      ```http
-      GET /view_coins HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjM1NDk0OSwicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.E52q8iJw1_m5mxwRZADcbNF6B5srbP0iM97f2tWg-ao
-      ```
-      Response body:
+    <summary><b><code>Check Balance</code></b></summary>
+    Request:
+    
+    ```http
+    GET /view_coins HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImV4cCI6MTYyNjM1NDk0OSwicm9sZSI6IiIsInJvbGxubyI6MTkwMTk3fQ.E52q8iJw1_m5mxwRZADcbNF6B5srbP0iM97f2tWg-ao
+    ```
+    Response body:
 
-      ```
-      {
-        "message": "SUCCESS",
-        "error": null,
-        "coins": 100
-      }
-      ```
+    ```
+    {
+      "message": "SUCCESS",
+      "error": null,
+      "coins": 100
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Transfer Coins</code></b></summary>
-      Request(I):
-      
-      ```http
-      POST /transfer HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4NzUsInJvbGUiOiJBZG1pbiIsInJvbGxubyI6MTgxMTk3fQ.moLUYSlffF3EPxTxI_6k5ePneLhGHzOnB5UmB9IbsQQ
+    <summary><b><code>Transfer Coins</code></b></summary>
+    Request(I):
+    
+    ```http
+    POST /transfer HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4NzUsInJvbGUiOiJBZG1pbiIsInJvbGxubyI6MTgxMTk3fQ.moLUYSlffF3EPxTxI_6k5ePneLhGHzOnB5UmB9IbsQQ
 
-      {
-        "receiver": 192197,
-        "amount": 100,
-        "description": "testing for an eligible sender"
-      }
-      ```
-      Response body(I):
+    {
+      "receiver": 192197,
+      "amount": 100,
+      "description": "testing for an eligible sender"
+    }
+    ```
+    Response body(I):
 
-      ```
-      {
-        "message": "Post your otp on http://localhost:8080/transfer/confirm to confirm your transaction",
-        "error": null
-      }
-      ```
-      Request(II):
-      
-      ```http
-      POST /transfer/confirm HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwMzU3MjEsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.f1vXV40Xb1kgEQQaLGYAymGPzwqBiKHpue7eHmHqZlQ
+    ```
+    {
+      "message": "Post your otp on http://localhost:8080/transfer/confirm to confirm your transaction",
+      "error": null
+    }
+    ```
+    Request(II):
+    
+    ```http
+    POST /transfer/confirm HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwMzU3MjEsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.f1vXV40Xb1kgEQQaLGYAymGPzwqBiKHpue7eHmHqZlQ
 
-      {
-        "otp": "612765",
-        "resend": false
-      }
-      ```
-      Response(II) body:
+    {
+      "otp": "612765",
+      "resend": false
+    }
+    ```
+    Response(II) body:
 
-      ```
-      {
-        "message": "Transaction Successful: User: #191197 transferred 98 coins to user: #192197",
-        "error": null,
-        "transaction_id": 1529
-      }
-      ```
+    ```
+    {
+      "message": "Transaction Successful: User: #191197 transferred 98 coins to user: #192197",
+      "error": null,
+      "transaction_id": 1529
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Reward Coins</code></b></summary>
-      Request:
-      
-      ```http
-      POST /reward HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4MDcsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.HjwFS35GEVe4k0jz7mLwrJOyTM51hQZTyJmeJHvwTzo
+    <summary><b><code>Reward Coins</code></b></summary>
+    Request:
+    
+    ```http
+    POST /reward HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDQ4MDcsInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.HjwFS35GEVe4k0jz7mLwrJOyTM51hQZTyJmeJHvwTzo
 
-      {
-        "receiver": 190197,
-        "amount": 100,
-        "description": "Testing for admin"
-      }
-      ```
-      Response body:
+    {
+      "receiver": 190197,
+      "amount": 100,
+      "description": "Testing for admin"
+    }
+    ```
+    Response body:
 
-      ```
-      {
-        "message": "Reward Successful; User: #190197 was rewarded with 200 coins",
-        "error": null,
-        "transaction_id": 1456
-      }
-      ```
+    ```
+    {
+      "message": "Reward Successful; User: #190197 was rewarded with 200 coins",
+      "error": null,
+      "transaction_id": 1456
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Make a Redeem request</code></b></summary>
-      Request(I):
-      
-      ```http
-      POST /redeems/new HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
+    <summary><b><code>Make a Redeem request</code></b></summary>
+    Request(I):
+    
+    ```http
+    POST /redeems/new HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
 
-      {
-        "item_id": 91051,
-        "amount": 100,
-        "description": "Testing an eligible sender."
-      }
-      ```
-      Response(I) body:
+    {
+      "item_id": 91051,
+      "amount": 100,
+      "description": "Testing an eligible sender."
+    }
+    ```
+    Response(I) body:
 
-      ```
-      {
-        "message": "Post your otp to http://localhost:8080/redeems/new/confirm to confirm your transaction",
-        "error": null
-      }
-      ```
-      Request(II):
-      
-      ```http
-      POST /redeems/new/confirm HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
+    ```
+    {
+      "message": "Post your otp to http://localhost:8080/redeems/new/confirm to confirm your transaction",
+      "error": null
+    }
+    ```
+    Request(II):
+    
+    ```http
+    POST /redeems/new/confirm HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOSIsImVtYWlsIjoiZGV2dGVzdC5hc2lzaEBnbWFpbC5jb20iLCJleHAiOjE2MjcwNDU1OTksInJvbGUiOiIiLCJyb2xsbm8iOjE5MTE5N30.4Fu80f4fWcdQwtxR1Ps4s5LPwqbD_dPeHucihz7Yi_A
 
-      {
-        "otp": "273801",
-        "resend": false
-      }
-      ```
-      Response(II) body:
+    {
+      "otp": "273801",
+      "resend": false
+    }
+    ```
+    Response(II) body:
 
-      ```
-      {
-        "message": "Redeem request successful",
-        "error": null,
-        "request_id": 3441
-      }
-      ```
+    ```
+    {
+      "message": "Redeem request successful",
+      "error": null,
+      "request_id": 3441
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>See Pending Redeem Requests of all Users</code></b></summary>
-      Request:
+    <summary><b><code>See Pending Redeem Requests of all Users</code></b></summary>
+    Request:
 
-      ```http
-      GET /redeems HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
-      ```
-      Response body:
+    ```http
+    GET /redeems HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
+    ```
+    Response body:
 
-      ```
-      {
-        "message": null,
-        "error": null,
-        "data": [
-          {
-            "request_id": 2,
-            "redeemer": 192197,
-            "item_id": 91020,
-            "amount": 30,
-            "description": "Testing an eligible sender.",
-            "requested_on": "2021-07-16T02:37:48Z"
-          },
-          {
-            "request_id": 3,
-            "redeemer": 192197,
-            "item_id": 91021,
-            "amount": 50,
-            "description": "Testing an eligible sender.",
-            "requested_on": "2021-07-16T03:52:25Z"
-          }
-        ]
-      }
-      ```
+    ```
+    {
+      "message": null,
+      "error": null,
+      "data": [
+        {
+          "request_id": 2,
+          "redeemer": 192197,
+          "item_id": 91020,
+          "amount": 30,
+          "description": "Testing an eligible sender.",
+          "requested_on": "2021-07-16T02:37:48Z"
+        },
+        {
+          "request_id": 3,
+          "redeemer": 192197,
+          "item_id": 91021,
+          "amount": 50,
+          "description": "Testing an eligible sender.",
+          "requested_on": "2021-07-16T03:52:25Z"
+        }
+      ]
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Accept/Reject Redeem requests</code></b></summary>
-      Request:
+    <summary><b><code>Accept/Reject Redeem requests</code></b></summary>
+    Request:
 
-      ```http
-      POST /redeems/update HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQxMTQ5MCwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.mrNBbfpwp9GjNKb2G0OgNbKNX8kdoJbafidMFof3sd0
+    ```http
+    POST /redeems/update HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQxMTQ5MCwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.mrNBbfpwp9GjNKb2G0OgNbKNX8kdoJbafidMFof3sd0
 
-      {
-        "request_id": 3,
-        "user": 192197,
-        "coins": 50,
-        "status": "Accept",
-        "description": "Testing an Admin"
-      }
-      ```
-      Response body:
+    {
+      "request_id": 3,
+      "user": 192197,
+      "coins": 50,
+      "status": "Accept",
+      "description": "Testing an Admin"
+    }
+    ```
+    Response body:
 
-      ```
-      {
-        "message": "Redeem updated successfully",
-        "error": null,
-        "transaction_id": 3
-      }
-      ```
+    ```
+    {
+      "message": "Redeem updated successfully",
+      "error": null,
+      "transaction_id": 3
+    }
+    ```
     </details>
     <details>
-      <summary><b><code>Show status of previous Redeems of a user</code></b></summary>
-      Request:
+    <summary><b><code>Show status of previous Redeems of a user</code></b></summary>
+    Request:
 
-      ```http
-      GET /redeems/status HTTP/1.1
-      HOST: localhost:8080
-      Content-Type: application/json
-      Accept: application/json
-      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
-      ```
-      Response body:
+    ```http
+    GET /redeems/status HTTP/1.1
+    HOST: localhost:8080
+    Content-Type: application/json
+    Accept: application/json
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXRjaCI6IlkxOCIsImV4cCI6MTYyNjQwOTM1Niwicm9sZSI6IkFkbWluIiwicm9sbG5vIjoxODExOTd9.aOwSdGSmEyaQYGhJNBAt449rcFi3fQ6JT0u6gu7Adtg
+    ```
+    Response body:
 
-      ```
-      {
-        "message": null,
-        "error": null,
-        "data": [
-          {
-            "id": 1,
-            "item_id": 91019,
-            "amount": 10,
-            "description": "Testing an Admin",
-            "status": "Accepted",
-            "requested_on": "2021-07-16T00:51:47Z",
-            "responded_on": "2021-07-16T03:53:28Z"
-          },
-          {
-            "id": 2,
-            "item_id": 91020,
-            "amount": 30,
-            "description": "Testing an eligible sender.",
-            "status": "Pending",
-            "requested_on": "2021-07-16T02:37:48Z",
-            "responded_on": "0001-01-01T00:00:00Z"
-          },
-          {
-            "id": 3,
-            "item_id": 91021,
-            "amount": 50,
-            "description": "Testing an Admin",
-            "status": "Accepted",
-            "requested_on": "2021-07-16T03:52:25Z",
-            "responded_on": "2021-07-16T04:29:16Z"
-          },
-          {
-            "id": 4,
-            "item_id": 91021,
-            "amount": 50,
-            "description": "Testing an eligible sender.",
-            "status": "Pending",
-            "requested_on": "2021-07-16T04:26:43Z",
-            "responded_on": "0001-01-01T00:00:00Z"
-          }
-        ]
-      }
-      ```
+    ```
+    {
+      "message": null,
+      "error": null,
+      "data": [
+        {
+          "id": 1,
+          "item_id": 91019,
+          "amount": 10,
+          "description": "Testing an Admin",
+          "status": "Accepted",
+          "requested_on": "2021-07-16T00:51:47Z",
+          "responded_on": "2021-07-16T03:53:28Z"
+        },
+        {
+          "id": 2,
+          "item_id": 91020,
+          "amount": 30,
+          "description": "Testing an eligible sender.",
+          "status": "Pending",
+          "requested_on": "2021-07-16T02:37:48Z",
+          "responded_on": "0001-01-01T00:00:00Z"
+        },
+        {
+          "id": 3,
+          "item_id": 91021,
+          "amount": 50,
+          "description": "Testing an Admin",
+          "status": "Accepted",
+          "requested_on": "2021-07-16T03:52:25Z",
+          "responded_on": "2021-07-16T04:29:16Z"
+        },
+        {
+          "id": 4,
+          "item_id": 91021,
+          "amount": 50,
+          "description": "Testing an eligible sender.",
+          "status": "Pending",
+          "requested_on": "2021-07-16T04:26:43Z",
+          "responded_on": "0001-01-01T00:00:00Z"
+        }
+      ]
+    }
+    ```
     </details>
 
 
