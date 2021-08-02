@@ -153,7 +153,7 @@ func ViewRedeemRequests(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if data, err := database.ShowAllRdmReqs(); err != nil {
-			server.Respond(w, payload, 400, "Cannot show redeem requests", err.Error(), nil)
+			server.Respond(w, payload, 400, "Could not show redeem requests", err.Error(), nil)
 		} else {
 			server.Respond(w, payload, 200, nil, nil, data)
 		}

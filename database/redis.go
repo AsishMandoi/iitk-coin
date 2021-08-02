@@ -84,7 +84,7 @@ func GetPwdResetDetails(rollno int) (global.PwdResetObj, string, error) {
 	}
 
 	if err := redis.ScanStruct(values, &resetPwd); err != nil {
-		return global.PwdResetObj{}, "cannot decode password reset details", err
+		return global.PwdResetObj{}, "Could not decode password reset details", err
 	}
 
 	return global.PwdResetObj{rollno, resetPwd.Pwd, resetPwd.Otp}, "", nil
@@ -157,7 +157,7 @@ func GetTfrDetails(sender int) (global.TxnObj, string, error) {
 	}
 
 	if err := redis.ScanStruct(values, &tfrDet); err != nil {
-		return global.TxnObj{}, "cannot decode transaction details", err
+		return global.TxnObj{}, "Could not decode transaction details", err
 	}
 
 	return global.TxnObj{sender, tfrDet.Receiver, tfrDet.AmtSent, tfrDet.AmtRcvd, tfrDet.Descr, tfrDet.Otp}, "", nil
@@ -182,7 +182,7 @@ func GetRdmDetails(redeemer int) (global.RedeemObj, string, error) {
 	}
 
 	if err := redis.ScanStruct(values, &rdmDet); err != nil {
-		return global.RedeemObj{}, "cannot decode redeem details", err
+		return global.RedeemObj{}, "Could not decode redeem details", err
 	}
 
 	return global.RedeemObj{redeemer, rdmDet.ItemId, rdmDet.Amount, rdmDet.Descr, rdmDet.Otp}, "", nil

@@ -8,7 +8,7 @@ import (
 
 	"github.com/AsishMandoi/iitk-coin/database"
 	"github.com/AsishMandoi/iitk-coin/global"
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -72,7 +72,11 @@ func ValidateJWT(r *http.Request) (int, jwt.MapClaims, error) {
 		if t.Method.Alg() != "HS256" {
 			return []byte(""), fmt.Errorf("Invalid signing method")
 		}
-		rollno := int(t.Claims.(jwt.MapClaims)["rollno"].(float64))
+		claims, ok := t.Claims.(jwt.MapClaims)
+		if !ok {
+			return []byte(""), fmt.Errorf("Could not handle authorization token")
+		}
+		rollno := int(claims["rollno"].(float64))
 
 		// Getting the JWT id from an unverified token
 		jwtId, err := database.GetJWTid(rollno)
