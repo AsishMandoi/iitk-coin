@@ -2,8 +2,8 @@ iitkusers.db
 iitkusers.db-shm
 iitkusers.db-wal
 
-bash.sh
-test.sh
+scripts/bash.sh
+scripts/test.sh
 
 requests.rest
 

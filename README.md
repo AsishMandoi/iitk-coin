@@ -4,6 +4,14 @@
 - Containerized application accessible on [DockerHub](https://hub.docker.com/r/asishmandoi/iitk-coin)
 - Source code accessible on [GitHub](https://github.com/AsishMandoi/iitk-coin)
 
+## Highlights
+- [X] Image size on DockerHub: `~10MB`, Total space required to run the application:`~50MB`
+- [X] Suitable HTTP status codes assigned to all responses
+- [X] OTP based endpoints for an added layer of security
+- [X] Redis for temporary storage, fast retrieval of data
+- [X] [Write-Ahead Log (WAL)](https://sqlite.org/wal.html) mode enabled in SQLite
+- [X] A highly secure Access Token implementation
+
 ## Run the application locally
 <!-- ### Using source code from GitHub
   **`Redis server` needs to be running locally**
@@ -26,24 +34,17 @@
   go build -o iitk-coin-server && ./iitk-coin-server                                      # Build and run the executable binary
   ``` -->
 ### Using source code and docker-compose
-  *Requires `docker-compose` to be installed, no other installation required*
+  *Requires `docker-compose` installed, no other installation required*
   ``` bash
   # Download and run the file `run-from-source.sh`
   curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-from-source.sh -o run-from-source.sh -s && . run-from-source.sh
   ```
 ### Using images from DockerHub
-  *Requires `docker` to be installed, no other installation required*
+  *Requires `docker` installed, no other installation required*
   ``` bash
   # Download and run the file `run-containers.sh`
   curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-containers.sh -o run-containers.sh -s && . run-containers.sh
   ```
-
-## Summary of Features:
-- [X] Suitable HTTP status codes assigned to all responses
-- [X] OTP based endpoints for an added layer of security
-- [X] Redis for temporary storage, fast retrieval of data
-- [X] [Write-Ahead Log (WAL)](https://sqlite.org/wal.html) mode enabled in SQLite
-- [X] A highly secure Access Token implementation
 
 ## Overview
 - ### Subpackages
@@ -75,7 +76,7 @@
     │   ├── otp.go
     │   └── respond.go
     ├── scripts
-    │   ├── run-container.sh
+    │   ├── run-containers.sh
     │   └── run-from-source.sh
     ├── .env
     ├── .env.dev
@@ -542,11 +543,11 @@
     - `secret key` required to sign the JWT,
     - `maximum cap` for the coins and the variable `minimum events` which is a criteria for users to be eligible for transactions,
     - `expiration time` for authorization tokens
-  - If the `.env` file is not found the defult values of these environment variables will be used throughout the application.
+  - If the `.env` file is not found the default values of these environment variables will be used throughout the application.
   - The admin can update these varibles in the `.env` file. The updated values will be overwritten to the default values of the variables defined in the source code.
 
   *The correct `EMAIL_ID` and `PASSWORD` needs to be set for the otp functionality to work.*
-  *For running this application locally, the user will be prompted to enter them*
+  *For running this application locally, the user will have the option to enter them*
 
 - ### Cap for Maximum Coins
   Upper limit of the balance any user can hold. Currently set to `10001` coins.
@@ -592,6 +593,9 @@
 
 > A common approach for invalidating tokens when a user changes their password is to sign the token with a hash of their password. Thus if the password changes, any previous tokens automatically fail to verify. You can extend this to logout by including a last-logout-time in the user's record and using a combination of the last-logout-time and password hash to sign the token. This requires a DB lookup each time you need to verify the token signature, but presumably you're looking up the user anyway.\
 > [Travis Terry (stackoverflow)](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
+
+> You can't change environment variables on a container (or any other process) after it's been created.\
+> [David Maze](https://stackoverflow.com/a/65495853/15885436)
 
 > Turn on the Write-Ahead Logging, Disable connections pool\
 > [sqlite-concurrent-writing-performance (stackoverflow)](https://stackoverflow.com/questions/35804884/sqlite-concurrent-writing-performance/35805826), [Write-Ahead Logging (sqlite.org)](https://sqlite.org/wal.html)

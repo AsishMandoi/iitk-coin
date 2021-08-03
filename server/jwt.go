@@ -72,6 +72,9 @@ func ValidateJWT(r *http.Request) (int, jwt.MapClaims, error) {
 		if t.Method.Alg() != "HS256" {
 			return []byte(""), fmt.Errorf("Invalid signing method")
 		}
+		if err := t.Claims.Valid(); err != nil {
+			return []byte(""), err
+		}
 		claims, ok := t.Claims.(jwt.MapClaims)
 		if !ok {
 			return []byte(""), fmt.Errorf("Could not handle authorization token")
