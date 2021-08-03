@@ -24,12 +24,14 @@ export REDIS_CONTAINER_NAME=$redis
 # Name of the network
 network="IITK-Coin.network"
 
-# Create custom network
 echo Creating network \"$network\"
+
+# Create custom network
 docker network create $network
 
-# Run the backend-container and the redis-container using the created network
 echo Running the containers \"$backend\" and \"$redis\" on the network \"$network\"
+
+# Run the backend-container and the redis-container using the created network
 docker run -e EMAIL_ID=$EMAIL \
 -e PASSWORD=$PSWD \
 -e BACKEND_CONTAINER_NAME=$backend \
