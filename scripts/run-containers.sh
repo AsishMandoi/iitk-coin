@@ -23,7 +23,7 @@ export REDIS_CONTAINER_NAME=$redis
 network="IITK-Coin.network"
 
 # Create custom network
-if [ "$(docker network inspect $network)" ]; then
+if [ "$(docker network ls -q -f name=$network)" ]; then
   echo "Network with name \"$network\" already exists."
 else
   docker network create $network
