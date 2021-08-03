@@ -26,22 +26,16 @@
   go build -o iitk-coin-server && ./iitk-coin-server                                      # Build and run the executable binary
   ``` -->
 ### Using source code and docker-compose
-  **Requires `docker-compose` to be installed, no other installation required**
+  *Requires `docker-compose` to be installed, no other installation required*
   ``` bash
-  # Download the file `run-from-source.sh`
-  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/run-from-source.sh -o run-from-source.sh -s
-
-  # Run the file
-  . run-from-source.sh
+  # Download and run the file `run-from-source.sh`
+  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-from-source.sh -o run-from-source.sh -s && . run-from-source.sh
   ```
-### Using image from DockerHub
-  **Requires `docker` to be installed, no other installation required**
+### Using images from DockerHub
+  *Requires `docker` to be installed, no other installation required*
   ``` bash
-  # Download the file `run-containers.sh`
-  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/run-containers.sh -o run-containers.sh -s
-
-  # Run the file
-  . run-containers.sh
+  # Download and run the file `run-containers.sh`
+  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-containers.sh -o run-containers.sh -s && . run-containers.sh
   ```
 
 ## Summary of Features:
@@ -80,6 +74,9 @@
     │   ├── jwt.go
     │   ├── otp.go
     │   └── respond.go
+    ├── scripts
+    │   ├── run-container.sh
+    │   └── run-from-source.sh
     ├── .env
     ├── .env.dev
     ├── .gitignore
@@ -92,9 +89,7 @@
     ├── iitkusers.db-shm
     ├── iitkusers.db-wal
     ├── main.go
-    ├── README.md
-    ├── run-container.sh
-    └── run-from-source.sh
+    └── README.md
     ```
   </details>
 
