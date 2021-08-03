@@ -36,18 +36,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		usrDB, err := database.GetUsrDetails(usr.Rollno)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", usr.Rollno), err.Error(), nil)
-			} else {
-				server.Respond(w, payload, 500, "Could not fetch user details", err.Error(), nil)
-			}
+		if err == sql.ErrNoRows {
+			server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", usr.Rollno), err.Error(), nil)
+			return
+		} else if err != nil {
+			server.Respond(w, payload, 500, "Could not fetch user details", err.Error(), nil)
 			return
 		}
 
 		// Comparing the hash generated from the entered password with the bcrypt-hash (stored in the DB)
-		if err := bcrypt.CompareHashAndPassword([]byte(usrDB.Pwd), []byte(usr.Pwd)); err != nil {
-			server.Respond(w, payload, 401, "Login unsuccessful; Invalid user credentials", err.Error(), nil)
+		if err := bcrypt.CompareHashAndPassword([]byte(usrDB.Pwd), []byte(usr.Pwd)); err == bcrypt.ErrMismatchedHashAndPassword {
+			server.Respond(w, payload, 401, "Login unsuccessful: invalid user credentials", err.Error(), nil)
+			return
+		} else if err != nil {
+			server.Respond(w, payload, 500, "Login unsuccessful: Failed to comapare hash and password", err.Error(), nil)
 			return
 		}
 
@@ -55,7 +57,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Rollno             int
 			Email, Batch, Role string
 		}{usr.Rollno, usrDB.Email, usrDB.Batch, usrDB.Role}); err != nil {
-			server.Respond(w, payload, 403, "Login successful; Token could not be generated", err.Error(), nil)
+			server.Respond(w, payload, 502, "Login successful; Token could not be generated", err.Error(), nil)
 		} else {
 			server.Respond(w, payload, 200, "Login successful; Token generated successfully", nil, token)
 		}
@@ -89,6 +91,26 @@ func ResetPwd(w http.ResponseWriter, r *http.Request) {
 		}
 
 		rollno := int(claims["rollno"].(float64))
+
+		if !body.Otp {
+			usrDB, err := database.GetUsrDetails(rollno)
+			if err == sql.ErrNoRows {
+				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", rollno), err.Error(), nil)
+				return
+			} else if err != nil {
+				server.Respond(w, payload, 500, "Could not fetch user details", err.Error(), nil)
+				return
+			}
+
+			// Comparing the hash generated from the entered password with the bcrypt-hash (stored in the DB)
+			if err := bcrypt.CompareHashAndPassword([]byte(usrDB.Pwd), []byte(body.OldPwd)); err == bcrypt.ErrMismatchedHashAndPassword {
+				server.Respond(w, payload, 401, "Invalid user credentials", err.Error(), nil)
+				return
+			} else if err != nil {
+				server.Respond(w, payload, 500, "Failed to comapare hash and password", err.Error(), nil)
+				return
+			}
+		}
 
 		// Hashing the new password with a cost of 10
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.NewPwd), 10)

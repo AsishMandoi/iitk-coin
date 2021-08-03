@@ -37,7 +37,9 @@ func GetJWTid(rollno int) (string, error) {
 	defer conn.Close()
 
 	jwtId, err := redis.String(conn.Do("HGET", "token:"+fmt.Sprint(rollno), "jwtId"))
-	if err != nil {
+	if err == redis.ErrNil {
+		return "", fmt.Errorf("Invalid authorization token, %v", err)
+	} else if err != nil {
 		return "", err
 	}
 	return jwtId, nil

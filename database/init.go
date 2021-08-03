@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/AsishMandoi/iitk-coin/global"
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -47,7 +48,7 @@ func init() {
 		MaxIdle:     10,
 		IdleTimeout: 240 * time.Second,
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "localhost:6379")
+			return redis.Dial("tcp", global.RedisHost+":6379", redis.DialUsername("default"), redis.DialPassword(global.RedisPassword))
 		},
 	}
 }

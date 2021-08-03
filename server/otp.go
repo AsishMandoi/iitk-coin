@@ -52,7 +52,7 @@ func SendOTP(emailid string, details interface{}, job string) (string, error) {
 		}
 	}
 
-	gmailHost, gmailPort := "smtp.gmail.com", 587
+	// gmailHost, gmailPort := "smtp.gmail.com", 587
 	// iitkHost, iitkPort := "mmtp.iitk.ac.in", 25
 
 	m := mail.NewMessage()
@@ -66,7 +66,7 @@ func SendOTP(emailid string, details interface{}, job string) (string, error) {
 		m.SetHeader("Subject", "OTP for Password Reset")
 	}
 
-	body := "<p><i>This is a test email for IITK-Coin.</i></p><p>The OTP "
+	body := "<p>The OTP "
 	if job == "resetPwd" {
 		body += "to reset your password is <h2>"
 	} else {
@@ -76,7 +76,7 @@ func SendOTP(emailid string, details interface{}, job string) (string, error) {
 	// HTML body
 	m.SetBody("text/html", body)
 
-	d := mail.NewDialer(gmailHost, gmailPort, global.MyGmailId, global.MyPwd)
+	d := mail.NewDialer(global.MailHost, global.MailPort, global.MyGmailId, global.MyPwd)
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.

@@ -49,13 +49,12 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Making sure that the coins are being rewarded to a valid user but not to an Admin
-		if _, receiverRole, err := database.GetBatchnRole(body.Receiver); err != nil {
-			if err == sql.ErrNoRows {
-				server.Respond(w, payload, 400, fmt.Sprintf("Reward Failed; Could not identify receiver with roll no %v", body.Receiver), err.Error(), nil)
-			} else {
-				server.Respond(w, payload, 400, "Reward Failed", err.Error(), nil)
-			}
+		// Making sure that the coins are being rewarded to a valid user and not to an Admin
+		if _, receiverRole, err := database.GetBatchnRole(body.Receiver); err == sql.ErrNoRows {
+			server.Respond(w, payload, 400, fmt.Sprintf("Reward Failed: could not identify receiver with roll no %v", body.Receiver), err.Error(), nil)
+			return
+		} else if err != nil {
+			server.Respond(w, payload, 500, "Reward Failed", err.Error(), nil)
 			return
 		} else if receiverRole == "Admin" {
 			server.Respond(w, payload, 400, "Reward Failed", "Cannot reward coins to an Admin", nil)
@@ -65,7 +64,7 @@ func RewardCoins(w http.ResponseWriter, r *http.Request) {
 		if txnId, err := database.Reward(global.TxnObj{sender, body.Receiver, body.Amount, body.Amount, body.Descr, ""}); err != nil {
 			server.Respond(w, payload, 400, "Reward failed", err.Error(), nil)
 		} else {
-			server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful; User: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil, txnId)
+			server.Respond(w, payload, 200, fmt.Sprintf("Reward Successful: user: #%v was rewarded with %v coins", body.Receiver, body.Amount), nil, txnId)
 		}
 	} else {
 		server.Respond(w, payload, 501, "Welcome to /reward page! Please use a POST method to reward a user.", nil, nil)

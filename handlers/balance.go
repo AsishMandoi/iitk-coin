@@ -37,12 +37,11 @@ func ViewCoins(w http.ResponseWriter, r *http.Request) {
 		}
 
 		coins, err := database.GetCoins(userRollno)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", userRollno), err.Error(), nil)
-			} else {
-				server.Respond(w, payload, 500, "Could not fetch coins for the user", err.Error(), nil)
-			}
+		if err == sql.ErrNoRows {
+			server.Respond(w, payload, 400, fmt.Sprintf("Could not identify user with roll no %v", userRollno), err.Error(), nil)
+			return
+		} else if err != nil {
+			server.Respond(w, payload, 500, "Could not fetch coins for the user", err.Error(), nil)
 			return
 		}
 		server.Respond(w, payload, 200, "SUCCESS", nil, coins)

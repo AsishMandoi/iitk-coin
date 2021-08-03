@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  backend:
+    container_name: ${BACKEND_CONTAINER_NAME}
+    image: asishmandoi/iitk-coin:latest
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      EMAIL_ID: ${EMAIL_ID}
+      PASSWORD: ${PASSWORD}
+  
+  redis:
+    container_name: ${REDIS_CONTAINER_NAME}
+    image: redis:6.2.5-alpine3.14
+    restart: on-failure
+    ports:
+      - "6379"
+    command: redis-server --bind ${REDIS_CONTAINER_NAME} --requirepass ${REDIS_PWD}

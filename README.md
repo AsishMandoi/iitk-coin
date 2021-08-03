@@ -1,9 +1,51 @@
 # IITK Coin
 *A centralized pseudo-currency system to be used in IIT Kanpur*
 
+- Containerized application accessible on [DockerHub](https://hub.docker.com/r/asishmandoi/iitk-coin)
+- Source code accessible on [GitHub](https://github.com/AsishMandoi/iitk-coin)
+
+## Run the application locally
+<!-- ### Using source code from GitHub
+  **`Redis server` needs to be running locally**
+  ``` bash
+  export GOPATH=$(go env GOPATH)                                                          # Make sure `GOPATH` environment variable is set
+  mkdir -p $GOPATH/src/github.com/AsishMandoi/ && cd $GOPATH/src/github.com/AsishMandoi/  # Make this directory and change the working directory as given
+
+  git clone https://github.com/AsishMandoi/iitk-coin.git                                  # Clone this repository
+
+  cd ./iitk-coin                                                                          # Change the working directory again as given
+
+  export REDIS_CONTAINER_NAME=localhost                                                   # Required for redis
+
+  ##### Set EMAIL_ID and PASSWORD in .env for OTPs to function #####
+  # ...
+  # EMAIL_ID=<enter_sender_email>
+  # PASSWORD=<enter_sender_password>
+  # ...
+
+  go build -o iitk-coin-server && ./iitk-coin-server                                      # Build and run the executable binary
+  ``` -->
+### Using source code and docker-compose
+  **Requires `docker-compose` to be installed, no other installation required**
+  ``` bash
+  # Download the file `run-from-source.sh`
+  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/run-from-source.sh -o run-from-source.sh -s
+
+  # Run the file
+  . run-from-source.sh
+  ```
+### Using image from DockerHub
+  **Requires `docker` to be installed, no other installation required**
+  ``` bash
+  # Download the file `run-containers.sh`
+  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/run-containers.sh -o run-containers.sh -s
+
+  # Run the file
+  . run-containers.sh
+  ```
+
 ## Summary of Features:
-- [x] Easy-to-use Directory structure
-- [x] Suitable HTTP status codes assigned to all responses
+- [X] Suitable HTTP status codes assigned to all responses
 - [X] OTP based endpoints for an added layer of security
 - [X] Redis for temporary storage, fast retrieval of data
 - [X] [Write-Ahead Log (WAL)](https://sqlite.org/wal.html) mode enabled in SQLite
@@ -41,13 +83,18 @@
     ├── .env
     ├── .env.dev
     ├── .gitignore
+    ├── .dockerignore
+    ├── Dockerfile
+    ├── docker-compose.yml
     ├── go.mod
     ├── go.sum
     ├── iitkusers.db
     ├── iitkusers.db-shm
     ├── iitkusers.db-wal
     ├── main.go
-    └── README.md
+    ├── README.md
+    ├── run-container.sh
+    └── run-from-source.sh
     ```
   </details>
 
@@ -492,10 +539,19 @@
   - Expiry time is currently set to `30 minutes`.
 
 - ### .env
-  - The `.env` file contains the `Secret Key`(for signing the access token) to sign the JWT, the variable `Maximum Cap` for the coins and the variable `Minimum Events` which is a for users to be eligible for transactions. It is deliberately left out of `.gitignore` for the purposes of checking.
-  - If an `.env` file is not found the defult values of these environment variables will be used throughout.
-  - My intention was to make it convenient for one who is running the backend to be able to update these varibles in the `.env` file without having to search for them in the code. And I have made it so that, if these environment variables are updated here these values will be overwritten to the variables defined inside the code.
-  - There is also a file named `.env.dev` that contains a the gmailid and password for a test account from which all OTPs are sent.
+  - The `.env` file contains the following `enviroment variables`
+    - `backend container name` and `redis container name`,
+    - `redis password` (required to connect to the redis server),
+    - `outgoing mail server` and its `port`,
+    - `emailid` and `password` of the sender's account from which all OTPs are sent,
+    - `secret key` required to sign the JWT,
+    - `maximum cap` for the coins and the variable `minimum events` which is a criteria for users to be eligible for transactions,
+    - `expiration time` for authorization tokens
+  - If the `.env` file is not found the defult values of these environment variables will be used throughout the application.
+  - The admin can update these varibles in the `.env` file. The updated values will be overwritten to the default values of the variables defined in the source code.
+
+  *The correct `EMAIL_ID` and `PASSWORD` needs to be set for the otp functionality to work.*
+  *For running this application locally, the user will be prompted to enter them*
 
 - ### Cap for Maximum Coins
   Upper limit of the balance any user can hold. Currently set to `10001` coins.

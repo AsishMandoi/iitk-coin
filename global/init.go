@@ -9,14 +9,19 @@ import (
 )
 
 func init() {
-	// This displays a warning if the ".env file" or ".env.dev" fails to load
-	if err := godotenv.Load(".env", ".env.dev"); err != nil {
-		fmt.Println("Warning: Could not load .env file; Your environment variables will be empty by default.")
+	// This displays a warning if the ".env" file fails to load.
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("WARNING: .env file could not be loaded")
 	}
 
-	SignatureKey, MyGmailId, MyPwd = os.Getenv("SECRET_KEY"), os.Getenv("GMAILID"), os.Getenv("PASSWORD")
+	BackendName, RedisHost, RedisPassword = os.Getenv("BACKEND_CONTAINER_NAME"), os.Getenv("REDIS_CONTAINER_NAME"), os.Getenv("REDIS_PWD")
+	SignatureKey, MailHost, MyGmailId, MyPwd = os.Getenv("SECRET_KEY"), os.Getenv("MAIL_HOST"), os.Getenv("EMAIL_ID"), os.Getenv("PASSWORD")
 
 	var parseErr error
+	MailPort, parseErr = strconv.Atoi(os.Getenv("MAIL_PORT"))
+	if parseErr != nil {
+		fmt.Println("Parse error for MailPort")
+	}
 	MaxCap, parseErr = strconv.ParseFloat(os.Getenv("MAX_CAP"), 64)
 	if parseErr != nil {
 		fmt.Println("Parse error for MaxCap")
@@ -24,5 +29,9 @@ func init() {
 	MinEvents, parseErr = strconv.Atoi(os.Getenv("MIN_EVENTS"))
 	if parseErr != nil {
 		fmt.Println("Parse error for MinEvents")
+	}
+	TknExpTime, parseErr = strconv.Atoi(os.Getenv("EXP_TIME"))
+	if parseErr != nil {
+		fmt.Println("Parse error for TknExpTime")
 	}
 }

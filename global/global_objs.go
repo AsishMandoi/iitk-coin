@@ -1,12 +1,19 @@
 package global
 
 // Defualt values
-var SignatureKey = ""
+var BackendName = "__IITK-Coin.dflt-backend__"
+var RedisHost = "localhost"
+var RedisPassword = "__dflt-pwd__"
+
+var MailHost = "smtp.gmail.com"
+var MailPort = 587
+var MyGmailId = "sender@example.com"
+var MyPwd = "sender.pwd"
+
+var SignatureKey = "xyz"
 var MaxCap = 101.0
 var MinEvents = 5
-var MyGmailId string
-var MyPwd string
-var TknExpTime = 30  // 30 mins
+var TknExpTime = 15 // mins
 
 type Stu struct {
 	Rollno   int    `json:"rollno"`

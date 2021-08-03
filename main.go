@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/AsishMandoi/iitk-coin/handlers"
 )
@@ -28,6 +29,10 @@ func main() {
 	http.HandleFunc("/transfer/confirm", handlers.TransferCheck)
 	http.HandleFunc("/redeems/new/confirm", handlers.RedeemCheck)
 
-	fmt.Println("Server running on localhost:8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Println("Server running on localhost:" + port + "...")
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
