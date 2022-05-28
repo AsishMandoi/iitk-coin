@@ -33,17 +33,19 @@
 
   go build -o iitk-coin-server && ./iitk-coin-server                                      # Build and run the executable binary
   ``` -->
+
+### Using images from DockerHub *(recommended)*
+  *Requires `docker` installed, no other installation required*
+  ``` bash
+  # Download and run the file `run-containers.sh`
+  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-containers.sh -o run-containers.sh -s && . run-containers.sh
+  ```
+
 ### Using source code and docker-compose
   *Requires `docker-compose` installed, no other installation required*
   ``` bash
   # Download and run the file `run-from-source.sh`
   curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-from-source.sh -o run-from-source.sh -s && . run-from-source.sh
-  ```
-### Using images from DockerHub
-  *Requires `docker` installed, no other installation required*
-  ``` bash
-  # Download and run the file `run-containers.sh`
-  curl https://raw.githubusercontent.com/AsishMandoi/iitk-coin/main/scripts/run-containers.sh -o run-containers.sh -s && . run-containers.sh
   ```
 
 ## Overview
@@ -595,7 +597,7 @@
 > [Travis Terry (stackoverflow)](https://stackoverflow.com/questions/21978658/invalidating-json-web-tokens/23089839#comment45057142_23089839)
 
 > You can't change environment variables on a container (or any other process) after it's been created.\
-> [David Maze](https://stackoverflow.com/a/65495853/15885436)
+> [David Maze (stackoverflow)](https://stackoverflow.com/a/65495853/15885436)
 
 > Turn on the Write-Ahead Logging, Disable connections pool\
 > [sqlite-concurrent-writing-performance (stackoverflow)](https://stackoverflow.com/questions/35804884/sqlite-concurrent-writing-performance/35805826), [Write-Ahead Logging (sqlite.org)](https://sqlite.org/wal.html)
