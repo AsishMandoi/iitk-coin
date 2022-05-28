@@ -41,7 +41,9 @@ jobs:
           # relative path to the place where source code with Dockerfile is located
           context: .
           # Note: tags has to be all lower-case
-          tags: asishmandoi/iitk-coin:latest
+          tags: |
+            asishmandoi/iitk-coin:latest
+            ghcr.io/asishmandoi/iitk-coin:latest
           # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/main' }}
 
