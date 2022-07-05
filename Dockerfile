@@ -12,7 +12,7 @@ WORKDIR /app/bin
 COPY --from=build /app/src/iitk-coin-server .
 COPY --from=build /app/src/.env .
 
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=80
+EXPOSE 80
 
 CMD ["./iitk-coin-server"]
